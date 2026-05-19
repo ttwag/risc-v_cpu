@@ -2,6 +2,7 @@ module tb_CPUTop;
     string dumpfile;
     parameter tb_NUM_BYTES = 64;
     parameter tb_CLK_PERIOD = 5;
+    parameter tb_SETTLE = 1; // must be >= 1 and < tb_CLK_PERIOD/2
     logic tb_clk;
     logic tb_rst_n;
     logic [31:0] tb_instr;
@@ -31,7 +32,7 @@ module tb_CPUTop;
 
 
     // -------------------------
-    // Tasks
+    // Utility Tasks
     // -------------------------
     task load_instr(input integer addr, input [31:0] instr);
         DUT.instructionMemory.instruct_memory[addr]   = instr[7:0];
@@ -53,12 +54,34 @@ module tb_CPUTop;
 
     task reset_dut();
         tb_rst_n = 1'b0;
-        @(posedge tb_clk); #1;
+        @(posedge tb_clk); #tb_SETTLE;
         tb_rst_n = 1'b1;
     endtask
 
-    task test_load_and_add();
+    task reset_mem();
+        for (int i = 0; i < tb_NUM_BYTES; i++) begin
+            DUT.instructionMemory.instruct_memory[i] = 8'b0;
+            DUT.dataMemory.memory[i] = 8'b0;
+        end
+    endtask
 
+    // -------------------------
+    // Utility Functions
+    // -------------------------
+    function [31:0] read_reg(input [4:0] register);
+        return DUT.registerFile.registers[register];
+    endfunction
+
+    // -------------------------
+    // Test Tasks
+    // -------------------------
+    task test_load_and_add();
+        // reset memory so this test stays clean from other tests
+        reset_mem();
+        
+        // reset the register and pc to 0
+        reset_dut();
+        
         // load data
         load_data(0, 32'b0011);
         load_data(4, 32'b0100);
@@ -68,34 +91,32 @@ module tb_CPUTop;
         load_instr(4, 32'b000000000100_00000_010_00001_0000011); // lw x1, 4(x0)
         load_instr(8, 32'b0000000_00010_00001_000_00001_0110011); // add x1, x1, x2
 
-        // reset the register and pc to 0
-        reset_dut();
-
         // check the state of reg after each instruction is done
-        @(posedge tb_clk); #1;
-        assert (DUT.registerFile.registers[2] == 3)
-            else $fatal(1, "x2 expected 3, got %0d", DUT.registerFile.registers[2]);
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(2) == 3)
+            else $fatal(1, "x2 expected 3, got %0d", read_reg(2));
 
-        @(posedge tb_clk); #1;
-        assert (DUT.registerFile.registers[1] == 4)
-            else $fatal(1, "x1 expected 4, got %0d", DUT.registerFile.registers[1]);
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 4)
+            else $fatal(1, "x1 expected 4, got %0d", read_reg(1));
         
-        @(posedge tb_clk); #1;
-        assert (DUT.registerFile.registers[1] == 7)
-            else $fatal(1, "x1 expected 7, got %0d", DUT.registerFile.registers[1]);
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 7)
+            else $fatal(1, "x1 expected 7, got %0d", read_reg(1));
     endtask
 
     task test_store_and_load();
+        reset_mem();
         reset_dut();
         load_reg(5'b11, 32'b1011);
         load_instr(0, 32'b0000000_00011_00000_010_01000_0100011); //sw x3, 8(x0)
         load_instr(4, 32'b000000001000_00000_010_00010_0000011); //lw x2, 8(x0)
         
-        @(posedge tb_clk); #1;
+        @(posedge tb_clk); #tb_SETTLE;
 
-        @(posedge tb_clk); #1;
-        assert (DUT.registerFile.registers[2] == 11)
-            else $fatal(1, "x2 expected 11, got %0d", DUT.registerFile.registers[2]);
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(2) == 11)
+            else $fatal(1, "x2 expected 11, got %0d", read_reg(2));
     endtask
 
     // -------------------------

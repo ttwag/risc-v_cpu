@@ -4,7 +4,7 @@
     {
       "label": "sim current file",
       "type": "shell",
-      "command": "FILE=${fileBasenameNoExtension} && FILE=${FILE#tb_} && mkdir -p sims && iverilog -g2012 -o sims/${FILE}_sim test_bench/tb_${FILE}.sv ${FILE}.sv && vvp sims/${FILE}_sim -fst +DUMPFILE=sims/${FILE}_dump.fst && surfer sims/${FILE}_dump.fst",
+      "command": "FILE=${fileBasenameNoExtension} && FILE=${FILE#tb_} && mkdir -p sims && iverilog -g2012 -o sims/${FILE}_sim test_bench/tb_${FILE}.sv ${FILE}.sv && vvp sims/${FILE}_sim -fst +DUMPFILE=sims/${FILE}_dump.fst && RUST_LOG=error surfer sims/${FILE}_dump.fst",
       "group": {
         "kind": "build",
         "isDefault": true
