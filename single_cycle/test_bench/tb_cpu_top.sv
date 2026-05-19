@@ -47,6 +47,10 @@ module tb_CPUTop;
         DUT.dataMemory.memory[addr+3] = data[31:24];    
     endtask
 
+    task load_reg(input [4:0] register, input [31:0] data);
+        DUT.registerFile.registers[register] = data;
+    endtask
+
     task reset_dut();
         tb_rst_n = 1'b0;
         @(posedge tb_clk); #1;
@@ -81,6 +85,18 @@ module tb_CPUTop;
             else $fatal(1, "x1 expected 7, got %0d", DUT.registerFile.registers[1]);
     endtask
 
+    task test_store_and_load();
+        reset_dut();
+        load_reg(5'b11, 32'b1011);
+        load_instr(0, 32'b0000000_00011_00000_010_01000_0100011); //sw x3, 8(x0)
+        load_instr(4, 32'b000000001000_00000_010_00010_0000011); //lw x2, 8(x0)
+        
+        @(posedge tb_clk); #1;
+
+        @(posedge tb_clk); #1;
+        assert (DUT.registerFile.registers[2] == 11)
+            else $fatal(1, "x2 expected 11, got %0d", DUT.registerFile.registers[2]);
+    endtask
 
     // -------------------------
     // Clock
@@ -99,7 +115,14 @@ module tb_CPUTop;
         $dumpfile(dumpfile);
         $dumpvars();
         
-        test_load_and_add();
+        // test r type variations
+        // test_load_and_add();
+        test_store_and_load();
+        // test b type
+        // test branch taken
+        // test branch not taken
+        // test immediate
+        // test jump
         $finish;
     end
 
