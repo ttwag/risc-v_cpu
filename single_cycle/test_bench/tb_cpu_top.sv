@@ -137,7 +137,7 @@ module tb_CPUTop;
         $dumpvars();
         
         // test r type variations
-        // test_load_and_add();
+        test_load_and_add();
         test_store_and_load();
         // test b type
         // test branch taken
