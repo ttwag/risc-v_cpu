@@ -9,7 +9,6 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
     - [Operations](#operations)
   - [Register File](#register-file)
   - [Control Unit](#control-unit)
-    - [Supported Instructions](#supported-instructions-1)
     - [Main Decoder Truth Table](#main-decoder-truth-table)
     - [ALU Decoder Truth Table](#alu-decoder-truth-table)
   - [Data Memory](#data-memory)
@@ -70,13 +69,6 @@ single_cycle/
 - When WE3 is 1, write WD3 to register specified in A3
 
 ## Control Unit
-
-### Supported Instructions
-
-- lw
-- sw
-- R-type
-- beq
 
 ### Main Decoder Truth Table
 
