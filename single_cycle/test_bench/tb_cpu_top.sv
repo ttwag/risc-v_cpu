@@ -152,6 +152,23 @@ module tb_CPUTop;
             else $fatal(1, "x1 expected 0, got %0d", read_reg(1));
     endtask
 
+    task test_add_branch_equal();
+        reset_mem();
+        reset_dut();
+        load_reg(5'b1, 32'b1); //x1 = 32'b1
+
+        load_instr(0, 32'b0000000_00001_00000_000_00010_0110011); //add x2 x0, x1
+        load_instr(4, 32'b0000000_00001_00010_000_01000_1100011); //beq x2, x1, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(2) == 1)
+            else $fatal(1, "x2 expected 1, got %0d", read_reg(2));
+        
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 12)
+            else $fatal(1, "pc expected 12, got %0d", DUT.pc);
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -172,6 +189,7 @@ module tb_CPUTop;
         test_r_type_instr();
         test_load_and_add();
         test_store_and_load();
+        test_add_branch_equal();
         // test b type
         // test branch taken
         // test branch not taken
