@@ -159,6 +159,7 @@ module tb_CPUTop;
 
         load_instr(0, 32'b0000000_00001_00000_000_00010_0110011); //add x2 x0, x1
         load_instr(4, 32'b0000000_00001_00010_000_01000_1100011); //beq x2, x1, 8
+        load_instr(12, 32'b0000000_00000_00010_000_01000_1100011); //beq x2, x0, 8
 
         @(posedge tb_clk); #tb_SETTLE;
         assert (read_reg(2) == 1)
@@ -167,6 +168,10 @@ module tb_CPUTop;
         @(posedge tb_clk); #tb_SETTLE;
         assert (DUT.pc == 12)
             else $fatal(1, "pc expected 12, got %0d", DUT.pc);
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 16)
+            else $fatal(1, "pc expected 16, got %0d", DUT.pc);
     endtask
 
     // -------------------------
