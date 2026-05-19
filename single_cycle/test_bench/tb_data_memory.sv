@@ -105,6 +105,17 @@ module tb_DataMemory;
             else $fatal(1, "RD expected %b, got %b", 32'b1000000010000000, tb_RD);
     endtask
 
+    task test_read_after_write();
+        tb_A = 32'b0;
+        tb_WD = 32'b1;
+        tb_WE = 1'b1;
+
+        @(posedge tb_CLK); #1
+        assert (tb_RD == tb_WD)
+            else $fatal(1, "Read Write Mismatched: %b (RD) != %b WD", tb_RD, tb_WD);
+        tb_WE = 1'b0;
+    endtask
+
     initial begin
         tb_CLK = 0;
         forever #(CLK_PERIOD/2) tb_CLK = ~tb_CLK;
@@ -120,18 +131,8 @@ module tb_DataMemory;
         test_lw();
         test_lbu();
         test_lhu();
+        test_read_after_write();
         
-        // Test Read after write
-        for (int i = 0; i < tb_NUM_BYTES; i+=4) begin
-            @(posedge tb_CLK);
-            tb_A = i;
-            tb_WD = 32'b1;
-            tb_WE = 1'b1;
-
-            #1
-            assert (tb_RD == tb_WD)
-                else $fatal(1, "Read Write Mismatched: %b (RD) != %b WD", tb_RD, tb_WD);
-        end
         $finish;
     end
     
