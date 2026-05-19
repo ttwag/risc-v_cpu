@@ -28,6 +28,7 @@ module CPUTop #(
     logic       alu_src;
     logic [1:0] imm_src;
     logic       reg_write;
+    logic [2:0] mem_width;
 
     // Data Memory
     logic [31:0] read_data;
@@ -96,7 +97,8 @@ module CPUTop #(
         .ALUControl(alu_control),
         .ALUSrc    (alu_src),
         .ImmSrc    (imm_src),
-        .RegWrite  (reg_write)
+        .RegWrite  (reg_write),
+        .MemWidth  (mem_width)
     );
 
     DataMemory #(.NUM_BYTES(NUM_BYTES)) dataMemory(
@@ -104,6 +106,7 @@ module CPUTop #(
         .WE(mem_write),
         .A(alu_result),
         .WD(reg_rd2),
+        .MemWidth(mem_width),
         .RD(read_data)
     );
 

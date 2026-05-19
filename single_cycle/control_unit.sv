@@ -9,7 +9,8 @@ module ControlUnit (
     output logic [2:0] ALUControl,
     output logic ALUSrc,
     output logic [1:0] ImmSrc,
-    output logic RegWrite
+    output logic RegWrite,
+    output logic [2:0] MemWidth
 );
     logic Branch;
     logic [1:0] ALUOp;
@@ -17,9 +18,9 @@ module ControlUnit (
     assign PCSrc = Branch & Zero;
 
     ControlUnitMainDecoder md(
-        .op(op), .Branch(Branch), .ResultSrc(ResultSrc),
+        .op(op), .funct3(funct3), .Branch(Branch), .ResultSrc(ResultSrc),
         .MemWrite(MemWrite), .ALUSrc(ALUSrc), .ImmSrc(ImmSrc),
-        .RegWrite(RegWrite), .ALUOp(ALUOp)
+        .RegWrite(RegWrite), .ALUOp(ALUOp), .MemWidth(MemWidth)
     );
 
     ControlUnitALUDecoder ad(
@@ -31,13 +32,15 @@ endmodule
 
 module ControlUnitMainDecoder (
     input logic [6:0] op,
+    input logic [2:0] funct3,
     output logic Branch,
     output logic ResultSrc,
     output logic MemWrite,
     output logic ALUSrc,
     output logic [1:0] ImmSrc,
     output logic RegWrite,
-    output logic [1:0] ALUOp
+    output logic [1:0] ALUOp,
+    output logic [2:0] MemWidth
 );
     always_comb begin
         // defaults
@@ -48,8 +51,10 @@ module ControlUnitMainDecoder (
         Branch    = 1'b0;
         ResultSrc = 1'b0;
         ImmSrc    = 2'b00;
+        MemWidth  = funct3;
+
         case (op)
-            7'b0000011: begin //lw
+            7'b0000011: begin //load
                 ResultSrc = 1'b1;
                 ALUSrc = 1'b1;
                 RegWrite = 1'b1;

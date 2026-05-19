@@ -19,7 +19,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 ## Supported Instructions
 
 - I-type
-  - lw
+  - lb, lh, lw, lbu, lhu
 - S-type
   - sw
 - R-type
@@ -72,12 +72,12 @@ single_cycle/
 
 ### Main Decoder Truth Table
 
-| Instruction | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp |
-| :---------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- |
-| lw          | 0000011 | 1        | 00     | 1      | 0        | 1         | 0      | 00    |
-| sw          | 0100011 | 0        | 01     | 1      | 1        | x         | 0      | 00    |
-| R-type      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    |
-| beq         | 1100011 | 0        | 10     | 0      | 0        | x         | 1      | 01    |
+| Instruction | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
+| :---------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- | -------- |
+| lw          | 0000011 | 1        | 00     | 1      | 0        | 1         | 0      | 00    | funct3   |
+| sw          | 0100011 | 0        | 01     | 1      | 1        | x         | 0      | 00    | funct3   |
+| R-type      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    | funct3   |
+| beq         | 1100011 | 0        | 10     | 0      | 0        | x         | 1      | 01    | funct3   |
 
 ### ALU Decoder Truth Table
 
@@ -99,6 +99,7 @@ single_cycle/
 - RISC-V is byte addressable
   - Each Memory address lives a byte
 - Read has to be asynchronous because writing the value back to a register takes a cycle, and each instruction must take 1 cycle
+- Depending on control unit's MemWidth, 1, 2, 4 bytes of memory could be read at once
 
 ## Instruction Memory
 
