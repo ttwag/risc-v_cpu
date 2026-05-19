@@ -89,15 +89,15 @@ single_cycle/
 
 ### ALU Decoder Truth Table
 
-| ALUOp | funct3 | {op5, funct75} | ALUControl          | Instruction |
-| :---- | ------ | -------------- | ------------------- | ----------- |
-| 00    | x      | x              | 000 (add)           | lw, sw      |
-| 01    | x      | x              | 001 (subtract)      | beq         |
-| 10    | 000    | 00, 01, 10     | 000 (add)           | add         |
-|       | 000    | 11             | 001 (subtract)      | sub         |
-|       | 010    | x              | 101 (set less than) | slt         |
-|       | 110    | x              | 011 (or)            | or          |
-|       | 111    | x              | 010 (and)           | and         |
+| ALUOp | funct3 | {op_5, funct7_5} | ALUControl          | Instruction |
+| :---- | ------ | ---------------- | ------------------- | ----------- |
+| 00    | x      | x                | 000 (add)           | lw, sw      |
+| 01    | x      | x                | 001 (subtract)      | beq         |
+| 10    | 000    | 00, 01, 10       | 000 (add)           | add         |
+|       | 000    | 11               | 001 (subtract)      | sub         |
+|       | 010    | x                | 101 (set less than) | slt         |
+|       | 110    | x                | 011 (or)            | or          |
+|       | 111    | x                | 010 (and)           | and         |
 
 ## Data Memory
 

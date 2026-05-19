@@ -119,6 +119,39 @@ module tb_CPUTop;
             else $fatal(1, "x2 expected 11, got %0d", read_reg(2));
     endtask
 
+    task test_r_type_instr();
+        reset_mem();
+        reset_dut();
+        load_reg(5'b10, 32'b1111); //x2 = 32'b1111
+        load_reg(5'b11, 32'b1111); //x3 = 32'b1111
+        
+        load_instr(0, 32'b0000000_00011_00010_000_00001_0110011); //add x1, x2, x3
+        load_instr(4, 32'b0100000_00011_00001_000_00001_0110011); //sub x1, x1, x3
+        load_instr(8, 32'b0000000_00000_00010_111_00001_0110011); //and x1, x2, x0
+        load_instr(12, 32'b0000000_00011_00010_110_00001_0110011); //or x1, x2, x3
+        load_instr(16, 32'b0000000_00011_00010_010_00001_0110011); //slt x1, x2, x3
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 30)
+            else $fatal(1, "x1 expected 30, got %0d", read_reg(1));
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 15)
+            else $fatal(1, "x1 expected 15, got %0d", read_reg(1));
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 0)
+            else $fatal(1, "x1 expected 0, got %0d", read_reg(1));
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 15)
+            else $fatal(1, "x1 expected 15, got %0d", read_reg(1));
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 0)
+            else $fatal(1, "x1 expected 0, got %0d", read_reg(1));
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -136,7 +169,7 @@ module tb_CPUTop;
         $dumpfile(dumpfile);
         $dumpvars();
         
-        // test r type variations
+        test_r_type_instr();
         test_load_and_add();
         test_store_and_load();
         // test b type
