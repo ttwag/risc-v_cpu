@@ -42,10 +42,11 @@ module ControlUnitMainDecoder (
     always_comb begin
         // defaults
         ALUOp     = 2'b00;
-        ALUSrc    = 0;
-        RegWrite  = 0;
-        MemWrite  = 0;
-        Branch    = 0;
+        ALUSrc    = 1'b0;
+        RegWrite  = 1'b0;
+        MemWrite  = 1'b0;
+        Branch    = 1'b0;
+        ResultSrc = 1'b0;
         ImmSrc    = 2'b00;
         case (op)
             7'b0000011: begin //lw
@@ -54,31 +55,18 @@ module ControlUnitMainDecoder (
                 RegWrite = 1'b1;
             end
             7'b0100011: begin //sw
-                Branch = 1'b0;
-                ResultSrc = 1'b0; //don't care
                 MemWrite = 1'b1;
                 ALUSrc = 1'b1;
-                ImmSrc = 2'b01;
-                RegWrite = 1'b0;
+                ImmSrc = 2'b1;
             end
-            // 7'b0010011: ALUSrc = 1'b1; // I-type ALU
             7'b0110011: begin// R-type
-                Branch = 1'b0;
-                ResultSrc = 1'b0;
-                MemWrite = 1'b0;
-                ALUSrc = 1'b0;
-                ImmSrc = 2'b00; //don't care
                 RegWrite = 1'b1;
                 ALUOp = 2'b10;
             end
             7'b1100011: begin //beq
                 Branch = 1'b1;
-                ResultSrc = 1'b0; //don't care
-                MemWrite = 1'b0;
-                ALUSrc = 1'b0;
                 ImmSrc = 2'b10;
-                RegWrite = 1'b0;
-                ALUOp = 2'b01;
+                ALUOp = 2'b1;
             end
         endcase
     end
