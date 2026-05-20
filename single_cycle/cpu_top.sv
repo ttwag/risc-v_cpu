@@ -24,7 +24,7 @@ module CPUTop #(
     logic       pc_src;
     logic       result_src;
     logic       mem_write;
-    logic [2:0] alu_control;
+    logic [3:0] alu_control;
     logic       alu_src;
     logic [1:0] imm_src;
     logic       reg_write;

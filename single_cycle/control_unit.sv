@@ -6,7 +6,7 @@ module ControlUnit (
     output logic PCSrc,
     output logic ResultSrc,
     output logic MemWrite,
-    output logic [2:0] ALUControl,
+    output logic [3:0] ALUControl,
     output logic ALUSrc,
     output logic [1:0] ImmSrc,
     output logic RegWrite,
@@ -82,26 +82,26 @@ module ControlUnitALUDecoder (
     input logic op_5,
     input logic funct7,
     input logic [1:0] ALUOp,
-    output logic [2:0] ALUControl
+    output logic [3:0] ALUControl
 );
     always_comb begin
         case (ALUOp)
             2'b00:
-                ALUControl = 3'b000;
+                ALUControl = 4'b000;
             2'b01:
-                ALUControl = 3'b001;
+                ALUControl = 4'b001;
             2'b10:
-                if (funct3 == 3'b000)
-                    if (op_5 & funct7 == 1'b0)
-                        ALUControl = 3'b000;
-                    else
-                        ALUControl = 3'b001;
-                else if (funct3 == 3'b010)
-                    ALUControl = 3'b101;
-                else if (funct3 == 3'b110)
-                    ALUControl = 3'b011;
-                else if (funct3 == 3'b111)
-                    ALUControl = 3'b010;
+                case (funct3)
+                    3'b000: ALUControl = ~(op_5 & funct7) ? 4'b0000 : 4'b0001; // add, sub
+                    3'b001: ALUControl = 4'b0111;                             // sll
+                    3'b010: ALUControl = 4'b0101;                             // slt
+                    3'b011: ALUControl = 4'b0110;                             // sltu
+                    3'b100: ALUControl = 4'b0100;                             // xor
+                    3'b101: ALUControl = ~funct7 ? 4'b1000 : 4'b1001;          // sra, srl
+                    3'b110: ALUControl = 4'b0011;                             // or
+                    3'b111: ALUControl = 4'b0010;                             // and
+                    default: ALUControl = 4'bx;
+                endcase
             default:
                 ALUControl = 3'bx;
         endcase

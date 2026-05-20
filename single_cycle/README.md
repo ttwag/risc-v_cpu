@@ -23,11 +23,10 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 - S-type
   - sw
 - R-type
-  - add
-  - sub
-  - and
-  - or
-  - slt
+  - add, sub
+  - and, or, xor
+  - slt, sltu
+  - sll, srl, sra
 - B-type
   - beq
 
@@ -52,13 +51,18 @@ single_cycle/
 
 ### Operations
 
-| ALUControl |   Operation |
-| ---------: | ----------: |
-|        000 |    Addition |
-|        001 | Subtraction |
-|        010 | Bitwise And |
-|        011 |  Bitwise Or |
-|        101 |         SLT |
+| ALUControl |              Operation |
+| ---------: | ---------------------: |
+|       0000 |               Addition |
+|       0001 |            Subtraction |
+|       0010 |            Bitwise And |
+|       0011 |             Bitwise Or |
+|       0100 |            Bitwise XOr |
+|       0101 |                    SLT |
+|       0110 |           SLT Unsigned |
+|       0111 |     Shift Left Logical |
+|       1000 |    Shift Right Logical |
+|       1001 | Shift Right Arithmetic |
 
 - SLT (Set Less Than) — outputs 1 if A < B (signed \* comparison), else 0
 
@@ -81,15 +85,20 @@ single_cycle/
 
 ### ALU Decoder Truth Table
 
-| ALUOp | funct3 | {op_5, funct7_5} | ALUControl          | Instruction |
-| :---- | ------ | ---------------- | ------------------- | ----------- |
-| 00    | x      | x                | 000 (add)           | lw, sw      |
-| 01    | x      | x                | 001 (subtract)      | beq         |
-| 10    | 000    | 00, 01, 10       | 000 (add)           | add         |
-|       | 000    | 11               | 001 (subtract)      | sub         |
-|       | 010    | x                | 101 (set less than) | slt         |
-|       | 110    | x                | 011 (or)            | or          |
-|       | 111    | x                | 010 (and)           | and         |
+| ALUOp | funct3 | {op_5, funct7_5} | ALUControl                    | Instruction |
+| :---- | ------ | ---------------- | ----------------------------- | ----------- |
+| 00    | x      | x                | 0000 (add)                    | lw, sw      |
+| 01    | x      | x                | 0001 (subtract)               | beq         |
+| 10    | 000    | 00, 01, 10       | 0000 (add)                    | add         |
+|       | 000    | 11               | 0001 (subtract)               | sub         |
+|       | 001    | x                | 0111 (shift Left Logical)     | sll         |
+|       | 010    | x                | 0101 (set less than)          | slt         |
+|       | 011    | x                | 0110 (set less than unsigned) | sltu        |
+|       | 100    | x                | 0100 (exclusive or)           | xor         |
+|       | 101    | x0               | 1000 (shift right logical)    | srl         |
+|       | 101    | x1               | 1001 (shift right arithmetic) | sra         |
+|       | 110    | x                | 0011 (or)                     | or          |
+|       | 111    | x                | 0010 (and)                    | and         |
 
 ## Data Memory
 
