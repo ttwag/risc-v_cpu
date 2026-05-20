@@ -8,7 +8,7 @@ module tb_ControlUnit;
     logic       tb_PCSrc;
     logic       tb_ResultSrc;
     logic       tb_MemWrite;
-    logic [2:0] tb_ALUControl;
+    logic [3:0] tb_ALUControl;
     logic       tb_ALUSrc;
     logic [1:0] tb_ImmSrc;
     logic       tb_RegWrite;
@@ -48,7 +48,7 @@ module tb_ControlUnit;
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "lw: MemWrite mismatch");
         assert (tb_ResultSrc  == 1'b1)   else $fatal(1, "lw: ResultSrc mismatch");
         assert (tb_PCSrc      == 1'b0)   else $fatal(1, "lw: PCSrc mismatch");
-        assert (tb_ALUControl == 3'b000) else $fatal(1, "lw: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b000) else $fatal(1, "lw: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 2: sw  (op=0100011)
@@ -65,7 +65,7 @@ module tb_ControlUnit;
         assert (tb_ALUSrc     == 1'b1)   else $fatal(1, "sw: ALUSrc mismatch");
         assert (tb_MemWrite   == 1'b1)   else $fatal(1, "sw: MemWrite mismatch");
         assert (tb_PCSrc      == 1'b0)   else $fatal(1, "sw: PCSrc mismatch");
-        assert (tb_ALUControl == 3'b000) else $fatal(1, "sw: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b000) else $fatal(1, "sw: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 3: beq, Zero=0  (op=1100011)
@@ -82,7 +82,7 @@ module tb_ControlUnit;
         assert (tb_ALUSrc     == 1'b0)   else $fatal(1, "beq(Z=0): ALUSrc mismatch");
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "beq(Z=0): MemWrite mismatch");
         assert (tb_PCSrc      == 1'b0)   else $fatal(1, "beq(Z=0): PCSrc mismatch");
-        assert (tb_ALUControl == 3'b001) else $fatal(1, "beq(Z=0): ALUControl mismatch");
+        assert (tb_ALUControl == 4'b001) else $fatal(1, "beq(Z=0): ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 4: beq, Zero=1  (op=1100011)
@@ -95,7 +95,7 @@ module tb_ControlUnit;
         #10;
         assert (tb_PCSrc      == 1'b1)   else $fatal(1, "beq(Z=1): PCSrc mismatch");
         assert (tb_ImmSrc     == 2'b10)  else $fatal(1, "beq(Z=0): ImmSrc mismatch");
-        assert (tb_ALUControl == 3'b001) else $fatal(1, "beq(Z=1): ALUControl mismatch");
+        assert (tb_ALUControl == 4'b001) else $fatal(1, "beq(Z=1): ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 5: R-type ADD  (op=0110011, funct3=000, op[5]=1, funct7=0)
@@ -113,7 +113,7 @@ module tb_ControlUnit;
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "add: MemWrite mismatch");
         assert (tb_ResultSrc  == 1'b0)   else $fatal(1, "add: ResultSrc mismatch");
         assert (tb_PCSrc      == 1'b0)   else $fatal(1, "add: PCSrc mismatch");
-        assert (tb_ALUControl == 3'b000) else $fatal(1, "add: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b000) else $fatal(1, "add: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 6: R-type SUB  (op=0110011, funct3=000, op[5]=1, funct7=1)
@@ -126,7 +126,7 @@ module tb_ControlUnit;
         #10;
         assert (tb_RegWrite   == 1'b1)   else $fatal(1, "sub: RegWrite mismatch");
         assert (tb_ALUSrc     == 1'b0)   else $fatal(1, "sub: ALUSrc mismatch");
-        assert (tb_ALUControl == 3'b001) else $fatal(1, "sub: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b001) else $fatal(1, "sub: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 7: R-type SLT  (op=0110011, funct3=010)
@@ -138,7 +138,7 @@ module tb_ControlUnit;
         tb_Zero   = 1'b0;
         #10;
         assert (tb_RegWrite   == 1'b1)   else $fatal(1, "slt: RegWrite mismatch");
-        assert (tb_ALUControl == 3'b101) else $fatal(1, "slt: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b101) else $fatal(1, "slt: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 8: R-type OR  (op=0110011, funct3=110)
@@ -150,7 +150,7 @@ module tb_ControlUnit;
         tb_Zero   = 1'b0;
         #10;
         assert (tb_RegWrite   == 1'b1)   else $fatal(1, "or: RegWrite mismatch");
-        assert (tb_ALUControl == 3'b011) else $fatal(1, "or: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b011) else $fatal(1, "or: ALUControl mismatch");
 
         // ----------------------------------------------------------------
         // TEST 9: R-type AND  (op=0110011, funct3=111)
@@ -162,7 +162,67 @@ module tb_ControlUnit;
         tb_Zero   = 1'b0;
         #10;
         assert (tb_RegWrite   == 1'b1)   else $fatal(1, "and: RegWrite mismatch");
-        assert (tb_ALUControl == 3'b010) else $fatal(1, "and: ALUControl mismatch");
+        assert (tb_ALUControl == 4'b010) else $fatal(1, "and: ALUControl mismatch");
+
+        // ----------------------------------------------------------------
+        // TEST 10: R-type XOR  (op=0110011, funct3=100)
+        //   ALUControl=0100 (xor)
+        // ----------------------------------------------------------------
+        tb_op     = 7'b0110011;
+        tb_funct3 = 3'b100;
+        tb_funct7 = 1'b0;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b1)      else $fatal(1, "xor: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b0100)   else $fatal(1, "xor: ALUControl mismatch");
+
+        // ----------------------------------------------------------------
+        // TEST 11: R-type SLTU  (op=0110011, funct3=011)
+        //   ALUControl=0110 (sltu)
+        // ----------------------------------------------------------------
+        tb_op     = 7'b0110011;
+        tb_funct3 = 3'b011;
+        tb_funct7 = 1'b0;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b1)      else $fatal(1, "sltu: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b0110)   else $fatal(1, "sltu: ALUControl mismatch");
+
+        // ----------------------------------------------------------------
+        // TEST 12: R-type SLL  (op=0110011, funct3=001)
+        //   ALUControl=0111 (sll)
+        // ----------------------------------------------------------------
+        tb_op     = 7'b0110011;
+        tb_funct3 = 3'b001;
+        tb_funct7 = 1'b0;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b1)      else $fatal(1, "sll: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b0111)   else $fatal(1, "sll: ALUControl mismatch");
+
+        // ----------------------------------------------------------------
+        // TEST 13: R-type SRL  (op=0110011, funct3=101, funct7=0)
+        //   ALUControl=1000 (srl)
+        // ----------------------------------------------------------------
+        tb_op     = 7'b0110011;
+        tb_funct3 = 3'b101;
+        tb_funct7 = 1'b0;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b1)      else $fatal(1, "srl: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b1000)   else $fatal(1, "srl: ALUControl mismatch");
+
+        // ----------------------------------------------------------------
+        // TEST 14: R-type SRA  (op=0110011, funct3=101, funct7=1)
+        //   ALUControl=1001 (sra)
+        // ----------------------------------------------------------------
+        tb_op     = 7'b0110011;
+        tb_funct3 = 3'b101;
+        tb_funct7 = 1'b1;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b1)      else $fatal(1, "sra: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b1001)   else $fatal(1, "sra: ALUControl mismatch");
 
         $display("All tests passed.");
         $finish;
