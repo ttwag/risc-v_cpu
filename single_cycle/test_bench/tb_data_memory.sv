@@ -29,6 +29,14 @@ module tb_DataMemory;
     endtask
 
     // -------------------------
+    // Read Function
+    // -------------------------
+    function [31:0] read_data(input integer addr);
+        return {DUT.memory[addr + 3], DUT.memory[addr + 2], DUT.memory[addr + 1], DUT.memory[addr]};
+    endfunction
+
+
+    // -------------------------
     // Tests
     // -------------------------
     task test_lb();
@@ -109,11 +117,50 @@ module tb_DataMemory;
         tb_A = 32'b0;
         tb_WD = 32'b1;
         tb_WE = 1'b1;
+        tb_MemWidth = 3'b010;
 
         @(posedge tb_CLK); #1
         assert (tb_RD == tb_WD)
             else $fatal(1, "Read Write Mismatched: %b (RD) != %b WD", tb_RD, tb_WD);
         tb_WE = 1'b0;
+    endtask
+
+    task test_sb();
+        tb_A = 32'b0;
+        tb_WD = 32'b1_0000_0001;
+        tb_WE = 1'b1;
+        tb_MemWidth = 3'b000;
+        load_data(tb_A, 32'b0);
+
+
+        // store at clock edge then read after some delay
+        @(posedge tb_CLK); #1
+        assert (read_data(tb_A) == {24'b0, tb_WD[7:0]})
+            else $fatal(1, "Expected %b to be read, got %b", {24'b0, tb_WD[7:0]}, read_data(tb_A));
+    endtask
+
+    task test_sh();
+        tb_A = 32'b0;
+        tb_WD = 32'b1_0000_0001;
+        tb_WE = 1'b1;
+        tb_MemWidth = 3'b001;
+
+        load_data(tb_A, 32'b0);
+
+        @(posedge tb_CLK); #1
+        assert (read_data(tb_A) == {16'b0, tb_WD[15:0]})
+            else $fatal(1, "Expected %b to be read, got %b", {16'b0, tb_WD[15:0]}, read_data(tb_A));
+    endtask
+
+    task test_sw();
+        tb_A = 32'b0;
+        tb_WD = 32'b1_0000_0001;
+        tb_WE = 1'b1;
+        tb_MemWidth = 3'b010;
+
+        @(posedge tb_CLK); #1
+        assert (read_data(tb_A) == tb_WD)
+            else $fatal(1, "Expected %b to be read, got %b", tb_WD, read_data(tb_A));
     endtask
 
     initial begin
@@ -131,6 +178,9 @@ module tb_DataMemory;
         test_lw();
         test_lbu();
         test_lhu();
+        test_sb();
+        test_sh();
+        test_sw();
         test_read_after_write();
         
         $finish;
