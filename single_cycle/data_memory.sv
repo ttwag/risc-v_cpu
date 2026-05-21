@@ -7,7 +7,7 @@ module DataMemory #(parameter NUM_BYTES = 4)
     input logic [2:0] MemWidth,
     output logic [31:0] RD
 );
-    // byte addressable memory
+    // byte addressable little-endian memory
     logic [7:0] memory [NUM_BYTES - 1 : 0];
 
     logic [7:0] b0, b1, b2, b3;
@@ -31,13 +31,14 @@ module DataMemory #(parameter NUM_BYTES = 4)
         endcase
     end
     
-    always_ff @(posedge CLK) begin
+    always_ff @(posedge CLK) begin //sequential write
         if (WE) begin
-            // little endian write
-            memory[A] <= WD[7:0];
-            memory[A + 1] <= WD[15:8];
-            memory[A + 2] <= WD[23:16];
-            memory[A + 3] <= WD[31:24];
+            case (MemWidth)
+                3'b000: memory[A] <= WD[7:0];
+                3'b001: {memory[A+1], memory[A]} <= WD[15:0];
+                3'b010: {memory[A+3], memory[A+2], memory[A+1], memory[A]} <= WD[31:0];
+                default: begin end
+            endcase
         end
     end
     

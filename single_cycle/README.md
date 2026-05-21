@@ -23,7 +23,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - **Non-shift Arithmetic:** addi, slti, sltiu, xori, ori, andi
   - **Shift Arithmetic:** slli, srli, srai
 - S-type
-  - sw
+  - **Store:** sb, sw, sh
 - R-type
   - add, sub
   - and, or, xor
