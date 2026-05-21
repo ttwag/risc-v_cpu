@@ -174,6 +174,42 @@ module tb_CPUTop;
             else $fatal(1, "pc expected 16, got %0d", DUT.pc);
     endtask
 
+    task test_sltiu_branch_equal();
+        reset_mem();
+        reset_dut();
+
+        load_instr(0, 32'b100000000000_00000_011_00010_0010011); //sltiu x2, x0, 12'b100000000000
+        load_instr(4, 32'b0000000_00000_00010_000_01000_1100011); //beq x2, x0, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(2) == 1)
+            else $fatal(1, "x2 expected 1, got %0d", read_reg(2));
+
+        // expects branch is not true: pc := pc + 4
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 8)
+            else $fatal(1, "pc expected 8, got %0d", DUT.pc);
+    endtask
+
+    task test_slli_branch_equal();
+        reset_mem();
+        reset_dut();
+        load_reg(5'b10, 32'b1); //x2 = 1
+        load_reg(5'b1, 32'b1_0000_0000_0000_0000); //x1 = 16
+
+        load_instr(0, 32'b000000010000_00010_001_00010_0010011); //slli x2, x2, 16
+        load_instr(4, 32'b0000000_00001_00010_000_01000_1100011); //beq x2, x1, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(2) == 32'b1_0000_0000_0000_0000)
+            else $fatal(1, "x2 expected 16, got 0x%h", read_reg(2));
+
+        // expects branch is true: pc := pc + 8
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 12)
+            else $fatal(1, "pc expected 12, got %0d", DUT.pc);
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -195,6 +231,8 @@ module tb_CPUTop;
         test_load_and_add();
         test_store_and_load();
         test_add_branch_equal();
+        test_sltiu_branch_equal();
+        test_slli_branch_equal();
         // test b type
         // test branch taken
         // test branch not taken
