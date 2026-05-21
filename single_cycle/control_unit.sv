@@ -7,7 +7,7 @@ module ControlUnit (
     output logic ResultSrc,
     output logic MemWrite,
     output logic [3:0] ALUControl,
-    output logic ALUSrc,
+    output logic [1:0] ALUSrc,
     output logic [1:0] ImmSrc,
     output logic RegWrite,
     output logic [2:0] MemWidth
@@ -36,7 +36,7 @@ module ControlUnitMainDecoder (
     output logic Branch,
     output logic ResultSrc,
     output logic MemWrite,
-    output logic ALUSrc,
+    output logic [1:0] ALUSrc,
     output logic [1:0] ImmSrc,
     output logic RegWrite,
     output logic [1:0] ALUOp,
@@ -45,7 +45,7 @@ module ControlUnitMainDecoder (
     always_comb begin
         // defaults
         ALUOp     = 2'b00;
-        ALUSrc    = 1'b0;
+        ALUSrc    = 2'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
         Branch    = 1'b0;
@@ -56,13 +56,18 @@ module ControlUnitMainDecoder (
         case (op)
             7'b0000011: begin //load
                 ResultSrc = 1'b1;
-                ALUSrc = 1'b1;
+                ALUSrc = 2'b1;
                 RegWrite = 1'b1;
             end
             7'b0100011: begin //sw
                 MemWrite = 1'b1;
-                ALUSrc = 1'b1;
+                ALUSrc = 2'b1;
                 ImmSrc = 2'b1;
+            end
+            7'b0010011: begin// I-type arithmetic
+                RegWrite = 1'b1;
+                ALUSrc = (funct3 == 3'b001 || funct3 == 3'b101) ? 2'b10 : 2'b1;
+                ALUOp = 2'b10;
             end
             7'b0110011: begin// R-type
                 RegWrite = 1'b1;

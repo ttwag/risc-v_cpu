@@ -25,7 +25,7 @@ module CPUTop #(
     logic       result_src;
     logic       mem_write;
     logic [3:0] alu_control;
-    logic       alu_src;
+    logic [1:0] alu_src;
     logic [1:0] imm_src;
     logic       reg_write;
     logic [2:0] mem_width;
@@ -50,7 +50,10 @@ module CPUTop #(
     // Multiplexors
     assign pc_target = pc + imm_ext;
     assign pc_plus_4 = pc + 4'b100;
-    assign src_b = (alu_src == 1'b1) ? imm_ext : reg_rd2;
+    assign src_b = (alu_src == 2'b00) ? reg_rd2 :
+                   (alu_src == 2'b01) ? imm_ext :
+                   (alu_src == 2'b10) ? {27'b0, imm_ext[4:0]} :
+                   32'bx;
     
     always_comb begin
         if (result_src == 1'b0)

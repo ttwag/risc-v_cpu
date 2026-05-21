@@ -19,7 +19,9 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 ## Supported Instructions
 
 - I-type
-  - lb, lh, lw, lbu, lhu
+  - **Load:** lb, lh, lw, lbu, lhu
+  - **Non-shift Arithmetic:** addi, slti, sltiu, xori, ori, andi
+  - **Shift Arithmetic:** slli, srli, srai
 - S-type
   - sw
 - R-type
@@ -76,12 +78,14 @@ single_cycle/
 
 ### Main Decoder Truth Table
 
-| Instruction | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
-| :---------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- | -------- |
-| lw          | 0000011 | 1        | 00     | 1      | 0        | 1         | 0      | 00    | funct3   |
-| sw          | 0100011 | 0        | 01     | 1      | 1        | x         | 0      | 00    | funct3   |
-| R-type      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    | funct3   |
-| beq         | 1100011 | 0        | 10     | 0      | 0        | x         | 1      | 01    | funct3   |
+| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
+| :-------------------------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- | -------- |
+| I-type Load                 | 0000011 | 1        | 00     | 01     | 0        | 1         | 0      | 00    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 00     | 01     | 0        | 0         | 0      | 10    | funct3   |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 00     | 10     | 0        | 0         | 0      | 10    | funct3   |
+| sw                          | 0100011 | 0        | 01     | 01     | 1        | x         | 0      | 00    | funct3   |
+| R-type                      | 0110011 | 1        | xx     | 00     | 0        | 0         | 0      | 10    | funct3   |
+| beq                         | 1100011 | 0        | 10     | 00     | 0        | x         | 1      | 01    | funct3   |
 
 ### ALU Decoder Truth Table
 
