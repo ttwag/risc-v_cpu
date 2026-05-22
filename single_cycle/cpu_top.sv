@@ -94,6 +94,7 @@ module CPUTop #(
         .funct3    (instr[14:12]),
         .funct7    (instr[30]),
         .Zero      (zero),
+        .ALUResult (alu_result[0]),
         .PCSrc     (pc_src),
         .ResultSrc (result_src),
         .MemWrite  (mem_write),

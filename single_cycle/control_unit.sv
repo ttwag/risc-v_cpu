@@ -3,6 +3,7 @@ module ControlUnit (
     input logic [2:0] funct3,
     input logic funct7,
     input logic Zero,
+    input logic ALUResult,
     output logic PCSrc,
     output logic ResultSrc,
     output logic MemWrite,
@@ -14,8 +15,9 @@ module ControlUnit (
 );
     logic Branch;
     logic [1:0] ALUOp;
+    logic BranchControl;
 
-    assign PCSrc = Branch & Zero;
+    assign PCSrc = Branch & BranchControl;
 
     ControlUnitMainDecoder md(
         .op(op), .funct3(funct3), .Branch(Branch), .ResultSrc(ResultSrc),
@@ -28,6 +30,12 @@ module ControlUnit (
         .ALUOp(ALUOp), .ALUControl(ALUControl)
     );
 
+    ControlUnitBranchDecoder bd(
+        .funct3(funct3),
+        .Zero(Zero),
+        .ALUResult(ALUResult),
+        .BranchControl(BranchControl)
+    );
 endmodule
 
 module ControlUnitMainDecoder (
@@ -93,8 +101,16 @@ module ControlUnitALUDecoder (
         case (ALUOp)
             2'b00:
                 ALUControl = 4'b000;
-            2'b01:
-                ALUControl = 4'b001;
+            2'b01: //b-type
+                case (funct3)
+                    3'b000: ALUControl = 4'b0001;
+                    3'b001: ALUControl = 4'b0001;
+                    3'b100: ALUControl = 4'b0101;
+                    3'b101: ALUControl = 4'b0101;
+                    3'b110: ALUControl = 4'b0110;
+                    3'b111: ALUControl = 4'b0110;
+                    default ALUControl = 4'bx;
+                endcase
             2'b10:
                 case (funct3)
                     3'b000: ALUControl = ~(op_5 & funct7) ? 4'b0000 : 4'b0001; // add, sub
@@ -109,6 +125,25 @@ module ControlUnitALUDecoder (
                 endcase
             default:
                 ALUControl = 3'bx;
+        endcase
+    end
+endmodule
+
+module ControlUnitBranchDecoder(
+    input logic [2:0] funct3,
+    input logic Zero,
+    input logic ALUResult,
+    output logic BranchControl
+);
+    always_comb begin
+        case (funct3)
+            3'b000: BranchControl = Zero;
+            3'b001: BranchControl = ~Zero;
+            3'b100: BranchControl = ALUResult;
+            3'b101: BranchControl = ~ALUResult;
+            3'b110: BranchControl = ALUResult;
+            3'b111: BranchControl = ~ALUResult;
+            default: BranchControl = 1'bx;
         endcase
     end
 endmodule

@@ -11,6 +11,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - [Control Unit](#control-unit)
     - [Main Decoder Truth Table](#main-decoder-truth-table)
     - [ALU Decoder Truth Table](#alu-decoder-truth-table)
+    - [Branch Decoder Truth Table](#branch-decoder-truth-table)
   - [Data Memory](#data-memory)
   - [Instruction Memory](#instruction-memory)
   - [Immediate Unit](#immediate-unit)
@@ -30,7 +31,9 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - slt, sltu
   - sll, srl, sra
 - B-type
-  - beq
+  - **Branch Equality:** beq, bne
+  - **Branch Comparison:** blt, bge
+  - **Branch Unsigned Comparison:** bltu, bgeu
 
 ## Directory Structure
 
@@ -92,7 +95,12 @@ single_cycle/
 | ALUOp | funct3 | {op_5, funct7_5} | ALUControl                    | Instruction |
 | :---- | ------ | ---------------- | ----------------------------- | ----------- |
 | 00    | x      | x                | 0000 (add)                    | lw, sw      |
-| 01    | x      | x                | 0001 (subtract)               | beq         |
+| 01    | 000    | x                | 0001 (subtract)               | beq         |
+|       | 001    | x                | 0001                          | bne         |
+|       | 100    | x                | 0101 (set les than)           | blt         |
+|       | 101    | x                | 0101 (set les than)           | bge         |
+|       | 110    | x                | 0110 (set les than unsigned)  | bltu        |
+|       | 111    | x                | 0110 (set les than unsigned)  | bgeu        |
 | 10    | 000    | 00, 01, 10       | 0000 (add)                    | add         |
 |       | 000    | 11               | 0001 (subtract)               | sub         |
 |       | 001    | x                | 0111 (shift Left Logical)     | sll         |
@@ -103,6 +111,17 @@ single_cycle/
 |       | 101    | x1               | 1001 (shift right arithmetic) | sra         |
 |       | 110    | x                | 0011 (or)                     | or          |
 |       | 111    | x                | 0010 (and)                    | and         |
+
+### Branch Decoder Truth Table
+
+| funct3 | ALUControl                   | BranchControl |
+| :----- | ---------------------------- | ------------- |
+| 000    | 0001 (subtract)              | Zero          |
+| 001    | 0001 (subtract)              | ~Zero         |
+| 100    | 0101 (set les than)          | ~ALUResult[0] |
+| 101    | 0101 (set les than)          | ALUResult[0]  |
+| 110    | 0110 (set les than unsigned) | ~ALUResult[0] |
+| 111    | 0110 (set les than unsigned) | ALUResult[0]  |
 
 ## Data Memory
 
