@@ -210,6 +210,23 @@ module tb_CPUTop;
             else $fatal(1, "pc expected 12, got %0d", DUT.pc);
     endtask
 
+    task test_addi_branch_less_than_unsigned();
+        reset_mem();
+        reset_dut();
+        
+        load_instr(0, 32'b111111111111_00000_000_00001_0010011); //addi x1, x0, -1
+        load_instr(4, 32'b0000000_00001_00000_110_01000_1100011); //bltu x0, x1, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == -32'sd1)
+            else $fatal(1, "x1 expected %h, got 0x%h", -32'sd1, read_reg(1));
+
+        // expects branch is true: pc := pc + 8
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 12)
+            else $fatal(1, "pc expected 12, got %0d", DUT.pc);
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -233,6 +250,7 @@ module tb_CPUTop;
         test_add_branch_equal();
         test_sltiu_branch_equal();
         test_slli_branch_equal();
+        test_addi_branch_less_than_unsigned();
         // test b type
         // test branch taken
         // test branch not taken

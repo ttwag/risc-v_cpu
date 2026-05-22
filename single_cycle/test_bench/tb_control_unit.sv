@@ -12,6 +12,8 @@ module tb_ControlUnit;
     logic [1:0] tb_ALUSrc;
     logic [1:0] tb_ImmSrc;
     logic       tb_RegWrite;
+    logic       tb_ALUResult;
+    logic       tb_BranchControl;
 
     ControlUnit dut (
         .op        (tb_op),
@@ -22,6 +24,7 @@ module tb_ControlUnit;
         .ResultSrc (tb_ResultSrc),
         .MemWrite  (tb_MemWrite),
         .ALUControl(tb_ALUControl),
+        .ALUResult (tb_ALUResult),
         .ALUSrc    (tb_ALUSrc),
         .ImmSrc    (tb_ImmSrc),
         .RegWrite  (tb_RegWrite)
@@ -73,7 +76,7 @@ module tb_ControlUnit;
         //   Branch=1 → PCSrc = Branch & Zero = 0, ALUControl=001 (subtract)
         // ----------------------------------------------------------------
         tb_op     = 7'b1100011;
-        tb_funct3 = 3'bxxx;
+        tb_funct3 = 3'b000;
         tb_funct7 = 1'bx;
         tb_Zero   = 1'b0;
         #10;
@@ -89,7 +92,7 @@ module tb_ControlUnit;
         //   Branch=1, Zero=1 → PCSrc=1
         // ----------------------------------------------------------------
         tb_op     = 7'b1100011;
-        tb_funct3 = 3'bxxx;
+        tb_funct3 = 3'b000;
         tb_funct7 = 1'bx;
         tb_Zero   = 1'b1;
         #10;
@@ -237,6 +240,21 @@ module tb_ControlUnit;
         assert (tb_ALUControl == 4'b0111)   else $fatal(1, "slli: ALUControl mismatch");
         assert (tb_ALUSrc == 2'b10)   else $fatal(1, "slli: ALUSrc mismatch");
 
+        // ----------------------------------------------------------------
+        // TEST 16: B-type bge (op=1100011, funct3=101, funct7=0)
+        //   ALUControl=0101 (bge), ALUSrc=2'b1
+        // ----------------------------------------------------------------
+        tb_op     = 7'b1100011;
+        tb_funct3 = 3'b101;
+        tb_funct7 = 1'bx;
+        tb_ALUResult = 1'b1;
+        tb_Zero   = 1'b0;
+        #10;
+        assert (tb_RegWrite   == 1'b0)      else $fatal(1, "bge: RegWrite mismatch");
+        assert (tb_ALUControl == 4'b0101)   else $fatal(1, "bge: ALUControl mismatch");
+        assert (tb_ALUSrc == 2'b0)          else $fatal(1, "bge: ALUSrc mismatch");
+        assert (dut.BranchControl == 1'b0)  else $fatal(1, "bge: BranchControl mismatch");
+        
         $display("All tests passed.");
         $finish;
     end
