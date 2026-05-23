@@ -25,6 +25,7 @@ module CPUTop #(
     logic       result_src;
     logic       mem_write;
     logic [3:0] alu_control;
+    logic [1:0] alu_src_a;
     logic       alu_src_b;
     logic [2:0] imm_src;
     logic       reg_write;
@@ -41,7 +42,7 @@ module CPUTop #(
 
     // Register File
     logic [4:0] reg_A1, reg_A2, reg_A3;
-    logic [31:0] reg_rd2;
+    logic [31:0] reg_rd1, reg_rd2;
     logic [31:0] result;
 
     // Sign Extend
@@ -50,6 +51,10 @@ module CPUTop #(
     // Multiplexors
     assign pc_target = pc + imm_ext;
     assign pc_plus_4 = pc + 4'b100;
+    assign src_a = (alu_src_a == 2'b0) ? reg_rd1 :
+                   (alu_src_a == 2'b1) ? pc :
+                   (alu_src_a == 2'b10) ? 32'b0 :
+                   32'bx; 
     assign src_b = (alu_src_b == 1'b0) ? reg_rd2 :
                    (alu_src_b == 1'b1) ? imm_ext :
                    32'bx;
@@ -98,7 +103,8 @@ module CPUTop #(
         .ResultSrc (result_src),
         .MemWrite  (mem_write),
         .ALUControl(alu_control),
-        .ALUSrc    (alu_src_b),
+        .ALUSrcA  (alu_src_a),
+        .ALUSrcB  (alu_src_b),
         .ImmSrc    (imm_src),
         .RegWrite  (reg_write),
         .MemWidth  (mem_width)
@@ -121,7 +127,7 @@ module CPUTop #(
         .A2(instr[24:20]),
         .A3(instr[11:7]), 
         .WD3(result),
-        .RD1(src_a), 
+        .RD1(reg_rd1), 
         .RD2(reg_rd2)
     );
     

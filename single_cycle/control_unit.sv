@@ -8,7 +8,8 @@ module ControlUnit (
     output logic ResultSrc,
     output logic MemWrite,
     output logic [3:0] ALUControl,
-    output logic ALUSrc,
+    output logic [1:0] ALUSrcA,
+    output logic ALUSrcB,
     output logic [2:0] ImmSrc,
     output logic RegWrite,
     output logic [2:0] MemWidth
@@ -21,7 +22,7 @@ module ControlUnit (
 
     ControlUnitMainDecoder md(
         .op(op), .funct3(funct3), .Branch(Branch), .ResultSrc(ResultSrc),
-        .MemWrite(MemWrite), .ALUSrc(ALUSrc), .ImmSrc(ImmSrc),
+        .MemWrite(MemWrite), .ALUSrcA(ALUSrcA), .ALUSrcB(ALUSrcB), .ImmSrc(ImmSrc),
         .RegWrite(RegWrite), .ALUOp(ALUOp), .MemWidth(MemWidth)
     );
 
@@ -44,7 +45,8 @@ module ControlUnitMainDecoder (
     output logic Branch,
     output logic ResultSrc,
     output logic MemWrite,
-    output logic ALUSrc,
+    output logic [1:0] ALUSrcA,
+    output logic ALUSrcB,
     output logic [2:0] ImmSrc,
     output logic RegWrite,
     output logic [1:0] ALUOp,
@@ -53,7 +55,8 @@ module ControlUnitMainDecoder (
     always_comb begin
         // defaults
         ALUOp     = 2'b00;
-        ALUSrc    = 1'b0;
+        ALUSrcA  = 2'b0;
+        ALUSrcB  = 1'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
         Branch    = 1'b0;
@@ -64,17 +67,17 @@ module ControlUnitMainDecoder (
         case (op)
             7'b0000011: begin //load
                 ResultSrc = 1'b1;
-                ALUSrc = 1'b1;
+                ALUSrcB = 1'b1;
                 RegWrite = 1'b1;
             end
             7'b0100011: begin //sw
                 MemWrite = 1'b1;
-                ALUSrc = 1'b1;
+                ALUSrcB = 1'b1;
                 ImmSrc = 3'b1;
             end
             7'b0010011: begin// I-type arithmetic
                 RegWrite = 1'b1;
-                ALUSrc = 1'b1;
+                ALUSrcB = 1'b1;
                 ImmSrc = (funct3 == 3'b001 || funct3 == 3'b101) ? 3'b100 : 3'b000;
                 ALUOp = 2'b10;
             end
@@ -86,6 +89,18 @@ module ControlUnitMainDecoder (
                 Branch = 1'b1;
                 ImmSrc = 3'b10;
                 ALUOp = 2'b1;
+            end
+            7'b0010111: begin //U-type PC-Relative
+                RegWrite = 1'b1;
+                ALUSrcA = 2'b1;
+                ALUSrcB = 1'b1;
+                ImmSrc = 3'b101;
+            end
+            7'b0110111: begin //U-type Non PC-Relative
+                RegWrite = 1'b1;
+                ALUSrcA = 2'b10;
+                ALUSrcB = 1'b1;
+                ImmSrc = 3'b101;
             end
         endcase
     end

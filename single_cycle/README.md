@@ -34,6 +34,9 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - **Branch Equality:** beq, bne
   - **Branch Comparison:** blt, bge
   - **Branch Unsigned Comparison:** bltu, bgeu
+- U-type
+  - **PC-Relative:** auipc
+  - **Non PC-Relative:** lui
 
 ## Directory Structure
 
@@ -81,36 +84,38 @@ single_cycle/
 
 ### Main Decoder Truth Table
 
-| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
-| :-------------------------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- | -------- |
-| I-type Load                 | 0000011 | 1        | 000    | 1      | 0        | 1         | 0      | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 1      | 0        | 0         | 0      | 10    | funct3   |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 10     | 0        | 0         | 0      | 10    | funct3   |
-| sw                          | 0100011 | 0        | 001    | 1      | 1        | x         | 0      | 00    | funct3   |
-| R-type                      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    | funct3   |
-| B-type                      | 1100011 | 0        | 010    | 0      | 0        | x         | 1      | 01    | funct3   |
+| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
+| :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ------ | ----- | -------- |
+| I-type Load                 | 0000011 | 1        | 000    | 00      | 1       | 0        | 1         | 0      | 00    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 00      | 1       | 0        | 0         | 0      | 10    | funct3   |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 00      | 10      | 0        | 0         | 0      | 10    | funct3   |
+| sw                          | 0100011 | 0        | 001    | 00      | 1       | 1        | x         | 0      | 00    | funct3   |
+| R-type                      | 0110011 | 1        | xx     | 00      | 0       | 0        | 0         | 0      | 10    | funct3   |
+| B-type                      | 1100011 | 0        | 010    | 00      | 0       | 0        | x         | 1      | 01    | funct3   |
+| U-type PC-Relative          | 0010111 | 1        | 101    | 01      | 1       | 0        | 0         | 0      | 00    | x        |
+| U-type Non PC-Relative      | 0110111 | 1        | 101    | 10      | 1       | 0        | 0         | 0      | 00    | x        |
 
 ### ALU Decoder Truth Table
 
-| ALUOp | funct3 | {op_5, funct7_5} | ALUControl                    | Instruction |
-| :---- | ------ | ---------------- | ----------------------------- | ----------- |
-| 00    | x      | x                | 0000 (add)                    | lw, sw      |
-| 01    | 000    | x                | 0001 (subtract)               | beq         |
-|       | 001    | x                | 0001                          | bne         |
-|       | 100    | x                | 0101 (set les than)           | blt         |
-|       | 101    | x                | 0101 (set les than)           | bge         |
-|       | 110    | x                | 0110 (set les than unsigned)  | bltu        |
-|       | 111    | x                | 0110 (set les than unsigned)  | bgeu        |
-| 10    | 000    | 00, 01, 10       | 0000 (add)                    | add         |
-|       | 000    | 11               | 0001 (subtract)               | sub         |
-|       | 001    | x                | 0111 (shift Left Logical)     | sll         |
-|       | 010    | x                | 0101 (set less than)          | slt         |
-|       | 011    | x                | 0110 (set less than unsigned) | sltu        |
-|       | 100    | x                | 0100 (exclusive or)           | xor         |
-|       | 101    | x0               | 1000 (shift right logical)    | srl         |
-|       | 101    | x1               | 1001 (shift right arithmetic) | sra         |
-|       | 110    | x                | 0011 (or)                     | or          |
-|       | 111    | x                | 0010 (and)                    | and         |
+| ALUOp | funct3 | {op_5, funct7_5} | ALUControl                    | Instruction        |
+| :---- | ------ | ---------------- | ----------------------------- | ------------------ |
+| 00    | x      | x                | 0000 (add)                    | lw, sw, auipc, lui |
+| 01    | 000    | x                | 0001 (subtract)               | beq                |
+|       | 001    | x                | 0001                          | bne                |
+|       | 100    | x                | 0101 (set les than)           | blt                |
+|       | 101    | x                | 0101 (set les than)           | bge                |
+|       | 110    | x                | 0110 (set les than unsigned)  | bltu               |
+|       | 111    | x                | 0110 (set les than unsigned)  | bgeu               |
+| 10    | 000    | 00, 01, 10       | 0000 (add)                    | add                |
+|       | 000    | 11               | 0001 (subtract)               | sub                |
+|       | 001    | x                | 0111 (shift Left Logical)     | sll                |
+|       | 010    | x                | 0101 (set less than)          | slt                |
+|       | 011    | x                | 0110 (set less than unsigned) | sltu               |
+|       | 100    | x                | 0100 (exclusive or)           | xor                |
+|       | 101    | x0               | 1000 (shift right logical)    | srl                |
+|       | 101    | x1               | 1001 (shift right arithmetic) | sra                |
+|       | 110    | x                | 0011 (or)                     | or                 |
+|       | 111    | x                | 0010 (and)                    | and                |
 
 ### Branch Decoder Truth Table
 

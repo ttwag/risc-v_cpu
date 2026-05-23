@@ -8,6 +8,7 @@ module SignExtend(
     wire [11:0] s_imm = {Instr[31:25], Instr[11:7]};
     wire [12:0] b_imm = {Instr[31], Instr[7], Instr[30:25], Instr[11:8], 1'b0};
     wire [20:0] j_imm = {Instr[31], Instr[19:12], Instr[20], Instr[30:21], 1'b0};
+    wire [19:0] u_imm = Instr[31:12];
 
     always @(*) begin
         case (ImmSrc)
@@ -16,6 +17,7 @@ module SignExtend(
             3'b010: ImmExt = {{19{b_imm[12]}}, b_imm};
             3'b011: ImmExt = {{11{j_imm[20]}}, j_imm};
             3'b100: ImmExt = {27'b0, i_imm[4:0]};
+            3'b101: ImmExt = {u_imm, 12'b0};
             default: ImmExt = 32'bx;
         endcase
     end
