@@ -8,8 +8,8 @@ module ControlUnit (
     output logic ResultSrc,
     output logic MemWrite,
     output logic [3:0] ALUControl,
-    output logic [1:0] ALUSrc,
-    output logic [1:0] ImmSrc,
+    output logic ALUSrc,
+    output logic [2:0] ImmSrc,
     output logic RegWrite,
     output logic [2:0] MemWidth
 );
@@ -44,8 +44,8 @@ module ControlUnitMainDecoder (
     output logic Branch,
     output logic ResultSrc,
     output logic MemWrite,
-    output logic [1:0] ALUSrc,
-    output logic [1:0] ImmSrc,
+    output logic ALUSrc,
+    output logic [2:0] ImmSrc,
     output logic RegWrite,
     output logic [1:0] ALUOp,
     output logic [2:0] MemWidth
@@ -53,28 +53,29 @@ module ControlUnitMainDecoder (
     always_comb begin
         // defaults
         ALUOp     = 2'b00;
-        ALUSrc    = 2'b0;
+        ALUSrc    = 1'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
         Branch    = 1'b0;
         ResultSrc = 1'b0;
-        ImmSrc    = 2'b00;
+        ImmSrc    = 3'b000;
         MemWidth  = funct3;
 
         case (op)
             7'b0000011: begin //load
                 ResultSrc = 1'b1;
-                ALUSrc = 2'b1;
+                ALUSrc = 1'b1;
                 RegWrite = 1'b1;
             end
             7'b0100011: begin //sw
                 MemWrite = 1'b1;
-                ALUSrc = 2'b1;
-                ImmSrc = 2'b1;
+                ALUSrc = 1'b1;
+                ImmSrc = 3'b1;
             end
             7'b0010011: begin// I-type arithmetic
                 RegWrite = 1'b1;
-                ALUSrc = (funct3 == 3'b001 || funct3 == 3'b101) ? 2'b10 : 2'b1;
+                ALUSrc = 1'b1;
+                ImmSrc = (funct3 == 3'b001 || funct3 == 3'b101) ? 3'b100 : 3'b000;
                 ALUOp = 2'b10;
             end
             7'b0110011: begin// R-type
@@ -83,7 +84,7 @@ module ControlUnitMainDecoder (
             end
             7'b1100011: begin //beq
                 Branch = 1'b1;
-                ImmSrc = 2'b10;
+                ImmSrc = 3'b10;
                 ALUOp = 2'b1;
             end
         endcase

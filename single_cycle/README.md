@@ -83,12 +83,12 @@ single_cycle/
 
 | Instruction                 | Op      | RegWrite | ImmSrc | ALUSrc | MemWrite | ResultSrc | Branch | ALUOp | MemWidth |
 | :-------------------------- | ------- | -------- | ------ | ------ | -------- | --------- | ------ | ----- | -------- |
-| I-type Load                 | 0000011 | 1        | 00     | 01     | 0        | 1         | 0      | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 00     | 01     | 0        | 0         | 0      | 10    | funct3   |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 00     | 10     | 0        | 0         | 0      | 10    | funct3   |
-| sw                          | 0100011 | 0        | 01     | 01     | 1        | x         | 0      | 00    | funct3   |
-| R-type                      | 0110011 | 1        | xx     | 00     | 0        | 0         | 0      | 10    | funct3   |
-| beq                         | 1100011 | 0        | 10     | 00     | 0        | x         | 1      | 01    | funct3   |
+| I-type Load                 | 0000011 | 1        | 000    | 1      | 0        | 1         | 0      | 00    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 1      | 0        | 0         | 0      | 10    | funct3   |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 10     | 0        | 0         | 0      | 10    | funct3   |
+| sw                          | 0100011 | 0        | 001    | 1      | 1        | x         | 0      | 00    | funct3   |
+| R-type                      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    | funct3   |
+| beq                         | 1100011 | 0        | 010    | 0      | 0        | x         | 1      | 01    | funct3   |
 
 ### ALU Decoder Truth Table
 
@@ -144,10 +144,11 @@ single_cycle/
 
   | ImmSrc | ImmExt                                                         | Type | Description             |
   | :----- | :------------------------------------------------------------- | :--- | ----------------------- |
-  | 00     | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
-  | 01     | {{20{Instr[31]}}, Instr[31:25], Instr[11:7]}                   | S    | 12-bit signed immediate |
-  | 10     | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
-  | 11     | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
+  | 000    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
+  | 001    | {{20{Instr[31]}}, Instr[31:25], Instr[11:7]}                   | S    | 12-bit signed immediate |
+  | 010    | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
+  | 011    | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
+  | 100    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
 
 ## References
 
