@@ -88,7 +88,7 @@ single_cycle/
 | I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 10     | 0        | 0         | 0      | 10    | funct3   |
 | sw                          | 0100011 | 0        | 001    | 1      | 1        | x         | 0      | 00    | funct3   |
 | R-type                      | 0110011 | 1        | xx     | 0      | 0        | 0         | 0      | 10    | funct3   |
-| beq                         | 1100011 | 0        | 010    | 0      | 0        | x         | 1      | 01    | funct3   |
+| B-type                      | 1100011 | 0        | 010    | 0      | 0        | x         | 1      | 01    | funct3   |
 
 ### ALU Decoder Truth Table
 

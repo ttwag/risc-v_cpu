@@ -82,7 +82,7 @@ module ControlUnitMainDecoder (
                 RegWrite = 1'b1;
                 ALUOp = 2'b10;
             end
-            7'b1100011: begin //beq
+            7'b1100011: begin //B-type
                 Branch = 1'b1;
                 ImmSrc = 3'b10;
                 ALUOp = 2'b1;
