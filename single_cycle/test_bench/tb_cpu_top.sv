@@ -227,6 +227,32 @@ module tb_CPUTop;
             else $fatal(1, "pc expected 12, got %0d", DUT.pc);
     endtask
 
+    task test_u_type_pc_relative_intr();
+        reset_mem();
+        reset_dut();
+        
+        load_instr(4, 32'b00000000000000000001_00001_0010111); //auipc x1, 1
+        
+        @(posedge tb_clk); #tb_SETTLE;
+        // Do nothing
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(32'b1) == {20'b1, 12'b0} + 32'b100)
+            else $fatal(1, "pc expected %b, got %b", {20'b1, 12'b0} + 32'b100, read_reg(32'b1));
+    endtask
+
+    task test_u_type_non_pc_relative_instr();
+        reset_mem();
+        reset_dut();
+        
+        load_instr(0, 32'b00000000000000001000_00001_0110111); //lui x1, 8
+        
+        @(posedge tb_clk); #tb_SETTLE;
+        // Do nothing
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(32'b1) == {20'b1000, 12'b0})
+            else $fatal(1, "pc expected %b, got %b", {20'b1, 12'b0}, read_reg(32'b1));
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -251,6 +277,8 @@ module tb_CPUTop;
         test_sltiu_branch_equal();
         test_slli_branch_equal();
         test_addi_branch_less_than_unsigned();
+        test_u_type_pc_relative_intr();
+        test_u_type_non_pc_relative_instr();
         // test b type
         // test branch taken
         // test branch not taken

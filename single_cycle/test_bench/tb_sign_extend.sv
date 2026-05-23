@@ -60,6 +60,13 @@ module tb_SignExtend;
         #5;
         assert (tb_ImmExt == expected_ImmExt)
             else $fatal(1, "J-Type Instruction Assertion failed: %h != %h (expected)", tb_ImmExt, expected_ImmExt);
+
+        tb_ImmSrc = 3'b101;
+        tb_Instr = 32'b00000000000000001010_00001_0110111; //upimm={20'b1010, 12'b0}
+        expected_ImmExt = {20'b1010, 12'b0};
+        #5;
+        assert (tb_ImmExt == expected_ImmExt)
+            else $fatal(1, "U-Type Instruction Assertion failed: %h != %h (expected)", tb_ImmExt, expected_ImmExt);
         
         $finish;
     end
