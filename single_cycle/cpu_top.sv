@@ -21,7 +21,7 @@ module CPUTop #(
     
     // Control Unit
     logic       zero;
-    logic       pc_src;
+    logic [1:0] pc_src;
     logic [1:0] result_src;
     logic       mem_write;
     logic [3:0] alu_control;
@@ -70,6 +70,7 @@ module CPUTop #(
         .rst_n(rst_n),
         .pc_src(pc_src),
         .imm_ext(imm_ext),
+        .alu_result(alu_result),
         .pc(pc),
         .pc_target(pc_target),
         .pc_plus_4(pc_plus_4)

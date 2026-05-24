@@ -24,6 +24,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - **Load:** lb, lh, lw, lbu, lhu
   - **Non-shift Arithmetic:** addi, slti, sltiu, xori, ori, andi
   - **Shift Arithmetic:** slli, srli, srai
+  - **Jump**: jalr
 - S-type
   - **Store:** sb, sw, sh
 - R-type
@@ -87,17 +88,18 @@ single_cycle/
 
 ### Main Decoder Truth Table
 
-| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | PCSrc         | ALUOp | MemWidth |
-| :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ------------- | ----- | -------- |
-| I-type Load                 | 0000011 | 1        | 000    | 0       | 1       | 0        | 01        | 0             | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 0             | 10    | funct3   |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 0             | 10    | funct3   |
-| sw                          | 0100011 | 0        | 001    | 0       | 1       | 1        | x         | 0             | 00    | funct3   |
-| R-type                      | 0110011 | 1        | xx     | 0       | 0       | 0        | 00        | 0             | 10    | funct3   |
-| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | BranchControl | 01    | funct3   |
-| U-type PC-Relative          | 0010111 | 1        | 101    | 0       | 0       | 0        | 11        | 0             | 00    | x        |
-| U-type Non PC-Relative      | 0110111 | 1        | 101    | 1       | 1       | 0        | 00        | 0             | 00    | x        |
-| J-type                      | 1101111 | 1        | 011    | 0       | 0       | 0        | 10        | 1             | 00    | x        |
+| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | PCSrc             | ALUOp | MemWidth |
+| :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ----------------- | ----- | -------- |
+| I-type Load                 | 0000011 | 1        | 000    | 0       | 1       | 0        | 01        | 00                | 00    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 00                | 10    | funct3   |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 00                | 10    | funct3   |
+| I-Type Jump                 | 1100111 | 1        | 000    | 0       | 1       | 0        | 10        | 10                | 00    | x        |
+| sw                          | 0100011 | 0        | 001    | 0       | 1       | 1        | x         | 00                | 00    | funct3   |
+| R-type                      | 0110011 | 1        | xx     | 0       | 0       | 0        | 00        | 00                | 10    | funct3   |
+| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | {0,BranchControl} | 01    | funct3   |
+| U-type PC-Relative          | 0010111 | 1        | 101    | 0       | 0       | 0        | 11        | 00                | 00    | x        |
+| U-type Non PC-Relative      | 0110111 | 1        | 101    | 1       | 1       | 0        | 00        | 00                | 00    | x        |
+| J-type                      | 1101111 | 1        | 011    | 0       | 0       | 0        | 10        | 01                | 00    | x        |
 
 ### ALU Decoder Truth Table
 
@@ -163,8 +165,9 @@ single_cycle/
 
 | pc_src | pc           |
 | :----- | ------------ |
-| 0      | pc + 4       |
-| 1      | pc + imm_ext |
+| 00     | pc + 4       |
+| 01     | pc + imm_ext |
+| 10     | alu_result   |
 
 ## References
 

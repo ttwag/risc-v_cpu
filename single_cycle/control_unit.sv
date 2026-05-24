@@ -4,7 +4,7 @@ module ControlUnit (
     input logic funct7,
     input logic Zero,
     input logic ALUResult,
-    output logic PCSrc,
+    output logic [1:0] PCSrc,
     output logic [1:0] ResultSrc,
     output logic MemWrite,
     output logic [3:0] ALUControl,
@@ -40,7 +40,7 @@ module ControlUnitMainDecoder (
     input logic [6:0] op,
     input logic [2:0] funct3,
     input logic BranchControl,
-    output logic PCSrc,
+    output logic [1:0] PCSrc,
     output logic [1:0] ResultSrc,
     output logic MemWrite,
     output logic ALUSrcA,
@@ -57,7 +57,7 @@ module ControlUnitMainDecoder (
         ALUSrcB  = 1'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
-        PCSrc    = 1'b0;
+        PCSrc    = 2'b0;
         ResultSrc = 2'b0;
         ImmSrc    = 3'b000;
         MemWidth  = funct3;
@@ -79,6 +79,12 @@ module ControlUnitMainDecoder (
                 ImmSrc = (funct3 == 3'b001 || funct3 == 3'b101) ? 3'b100 : 3'b000;
                 ALUOp = 2'b10;
             end
+            7'b1100111: begin //I-type Jump
+                RegWrite = 1'b1;
+                ALUSrcB = 1'b1;
+                ResultSrc = 2'b10;
+                PCSrc = 2'b10;
+            end
             7'b0110011: begin// R-type
                 RegWrite = 1'b1;
                 ALUOp = 2'b10;
@@ -86,7 +92,7 @@ module ControlUnitMainDecoder (
             7'b1100011: begin //B-type
                 ImmSrc = 3'b10;
                 ALUOp = 2'b1;
-                PCSrc = BranchControl;
+                PCSrc = {1'b0, BranchControl};
             end
             7'b0010111: begin //U-type PC-Relative
                 RegWrite = 1'b1;
@@ -103,7 +109,7 @@ module ControlUnitMainDecoder (
                 RegWrite = 1'b1;
                 ResultSrc = 2'b10;
                 ImmSrc = 3'b011;
-                PCSrc = 1'b1;
+                PCSrc = 2'b1;
             end
         endcase
     end
