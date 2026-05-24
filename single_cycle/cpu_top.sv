@@ -59,16 +59,10 @@ module CPUTop #(
                    (alu_src_b == 1'b1) ? imm_ext :
                    32'bx;
     
-    always_comb begin
-        if (result_src == 2'b0)
-            result = alu_result;
-        else if (result_src == 2'b1)
-            result = read_data;
-        else if (result_src == 2'b10)
-            result = pc_plus_4;
-        else
-            result = 32'bx;
-    end
+    assign result = (result_src == 2'b00) ? alu_result :
+                    (result_src == 2'b01) ? read_data  :
+                    (result_src == 2'b10) ? pc_plus_4  :
+                    32'bx;
 
     // PC
     ProgramCounter programCounter(
