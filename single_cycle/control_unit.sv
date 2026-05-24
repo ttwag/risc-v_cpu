@@ -14,15 +14,11 @@ module ControlUnit (
     output logic RegWrite,
     output logic [2:0] MemWidth
 );
-    logic Branch;
     logic [1:0] ALUOp;
     logic BranchControl;
-    logic Jump;
-
-    assign PCSrc = (Branch & BranchControl) | Jump;
 
     ControlUnitMainDecoder md(
-        .op(op), .funct3(funct3), .Branch(Branch), .Jump(Jump), .ResultSrc(ResultSrc),
+        .op(op), .funct3(funct3), .BranchControl(BranchControl), .PCSrc(PCSrc), .ResultSrc(ResultSrc),
         .MemWrite(MemWrite), .ALUSrcA(ALUSrcA), .ALUSrcB(ALUSrcB), .ImmSrc(ImmSrc),
         .RegWrite(RegWrite), .ALUOp(ALUOp), .MemWidth(MemWidth)
     );
@@ -43,8 +39,8 @@ endmodule
 module ControlUnitMainDecoder (
     input logic [6:0] op,
     input logic [2:0] funct3,
-    output logic Branch,
-    output logic Jump,
+    input logic BranchControl,
+    output logic PCSrc,
     output logic [1:0] ResultSrc,
     output logic MemWrite,
     output logic [1:0] ALUSrcA,
@@ -61,11 +57,10 @@ module ControlUnitMainDecoder (
         ALUSrcB  = 1'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
-        Branch    = 1'b0;
+        PCSrc    = 1'b0;
         ResultSrc = 2'b0;
         ImmSrc    = 3'b000;
         MemWidth  = funct3;
-        Jump      = 1'b0;
 
         case (op)
             7'b0000011: begin //load
@@ -89,9 +84,9 @@ module ControlUnitMainDecoder (
                 ALUOp = 2'b10;
             end
             7'b1100011: begin //B-type
-                Branch = 1'b1;
                 ImmSrc = 3'b10;
                 ALUOp = 2'b1;
+                PCSrc = BranchControl;
             end
             7'b0010111: begin //U-type PC-Relative
                 RegWrite = 1'b1;
@@ -109,7 +104,7 @@ module ControlUnitMainDecoder (
                 RegWrite = 1'b1;
                 ResultSrc = 2'b10;
                 ImmSrc = 3'b011;
-                Jump = 1'b1;
+                PCSrc = 1'b1;
             end
         endcase
     end
