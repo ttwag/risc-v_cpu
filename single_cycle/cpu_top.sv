@@ -22,7 +22,7 @@ module CPUTop #(
     // Control Unit
     logic       zero;
     logic       pc_src;
-    logic       result_src;
+    logic [1:0] result_src;
     logic       mem_write;
     logic [3:0] alu_control;
     logic [1:0] alu_src_a;
@@ -60,14 +60,14 @@ module CPUTop #(
                    32'bx;
     
     always_comb begin
-        if (result_src == 1'b0)
+        if (result_src == 2'b0)
             result = alu_result;
-        else if (result_src == 1'b1)
+        else if (result_src == 2'b1)
             result = read_data;
+        else if (result_src == 2'b10)
+            result = pc_plus_4;
         else
             result = 32'bx;
-        // else
-        //     result = pc_plus_4;
     end
 
     // PC
