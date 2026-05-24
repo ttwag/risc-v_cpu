@@ -3,8 +3,9 @@ module tb_PC;
     parameter tb_CLK_PERIOD = 5;
     parameter tb_SETTLE = 1;
     logic tb_clk, tb_rst_n;
-    logic tb_pc_src;
+    logic [1:0] tb_pc_src;
     logic [31:0] tb_imm_ext;
+    logic [31:0] tb_alu_result;
     logic [31:0] tb_pc;
     logic [31:0] tb_pc_target;
     logic [31:0] tb_pc_plus_4;
@@ -14,6 +15,7 @@ module tb_PC;
         .rst_n(tb_rst_n),
         .pc_src(tb_pc_src),
         .imm_ext(tb_imm_ext),
+        .alu_result(tb_alu_result),
         .pc(tb_pc),
         .pc_target(tb_pc_target),
         .pc_plus_4(tb_pc_plus_4)
@@ -33,17 +35,23 @@ module tb_PC;
         @(negedge tb_clk);
         tb_rst_n = 1'b1;
 
-        tb_pc_src = 1'b0;
+        tb_pc_src = 2'b0;
         tb_imm_ext = 32'b0;
         @(posedge tb_clk); #tb_SETTLE;
         assert(tb_pc == 4)
             else $fatal(1, "pc expected %d, got %b", 4, tb_pc);
         
-        tb_pc_src = 1'b1;
+        tb_pc_src = 2'b1;
         tb_imm_ext = 32'b10;
         @(posedge tb_clk); #tb_SETTLE;
         assert(tb_pc == 6)
             else $fatal(1, "pc expected %d, got %b", 6, tb_pc);
+
+        tb_pc_src = 2'b10;
+        tb_alu_result = 32'b1011;
+        @(posedge tb_clk); #tb_SETTLE;
+        assert(tb_pc == 11)
+            else $fatal(1, "pc expected %d, got %b", 11, tb_pc);        
         $finish;
     end
 

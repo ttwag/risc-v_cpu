@@ -265,6 +265,24 @@ module tb_CPUTop;
             else $fatal(1, "pc expected %d, got %b", 32, DUT.pc);
     endtask
 
+    task test_addi_jalr();
+        reset_mem();
+        reset_dut();
+        
+        load_instr(0, 32'b000000000101_00000_000_00001_0010011); //addi x1, x0, 5
+        load_instr(4, 32'b000000001000_00001_000_00001_1100111); //jalr x1, x1, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(32'b1) == 5)
+            else $fatal(1, "x1 expected %d, got %b", 5, read_reg(32'b1));
+        
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(32'b1) == 8)
+            else $fatal(1, "x1 expected %d, got %b", 8, read_reg(32'b1));
+        assert (DUT.pc == 13)
+            else $fatal(1, "pc expected %d, got %b", 13, DUT.pc);
+    endtask
+
     // -------------------------
     // Clock
     // -------------------------
@@ -292,6 +310,7 @@ module tb_CPUTop;
         test_u_type_pc_relative_intr();
         test_u_type_non_pc_relative_instr();
         test_jal();
+        test_addi_jalr();
         // test b type
         // test branch taken
         // test branch not taken

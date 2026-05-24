@@ -5,7 +5,7 @@ module tb_ControlUnit;
     logic [2:0] tb_funct3;
     logic       tb_funct7;
     logic       tb_Zero;
-    logic       tb_PCSrc;
+    logic [1:0] tb_PCSrc;
     logic [1:0] tb_ResultSrc;
     logic       tb_MemWrite;
     logic [3:0] tb_ALUControl;
@@ -52,7 +52,7 @@ module tb_ControlUnit;
         assert (tb_ALUSrcB   == 1'b1)   else $fatal(1, "lw: ALUSrcB mismatch");
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "lw: MemWrite mismatch");
         assert (tb_ResultSrc  == 1'b1)   else $fatal(1, "lw: ResultSrc mismatch");
-        assert (tb_PCSrc      == 1'b0)   else $fatal(1, "lw: PCSrc mismatch");
+        assert (tb_PCSrc      == 2'b0)   else $fatal(1, "lw: PCSrc mismatch");
         assert (tb_ALUControl == 4'b000) else $fatal(1, "lw: ALUControl mismatch");
 
         // ----------------------------------------------------------------
@@ -69,7 +69,7 @@ module tb_ControlUnit;
         assert (tb_ImmSrc     == 2'b01)  else $fatal(1, "sw: ImmSrc mismatch");
         assert (tb_ALUSrcB   == 1'b1)   else $fatal(1, "sw: ALUSrcB mismatch");
         assert (tb_MemWrite   == 1'b1)   else $fatal(1, "sw: MemWrite mismatch");
-        assert (tb_PCSrc      == 1'b0)   else $fatal(1, "sw: PCSrc mismatch");
+        assert (tb_PCSrc      == 2'b0)   else $fatal(1, "sw: PCSrc mismatch");
         assert (tb_ALUControl == 4'b000) else $fatal(1, "sw: ALUControl mismatch");
 
         // ----------------------------------------------------------------
@@ -86,7 +86,7 @@ module tb_ControlUnit;
         assert (tb_ImmSrc     == 2'b10)  else $fatal(1, "beq(Z=0): ImmSrc mismatch");
         assert (tb_ALUSrcB   == 1'b0)   else $fatal(1, "beq(Z=0): ALUSrcB mismatch");
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "beq(Z=0): MemWrite mismatch");
-        assert (tb_PCSrc      == 1'b0)   else $fatal(1, "beq(Z=0): PCSrc mismatch");
+        assert (tb_PCSrc      == 2'b0)   else $fatal(1, "beq(Z=0): PCSrc mismatch");
         assert (tb_ALUControl == 4'b001) else $fatal(1, "beq(Z=0): ALUControl mismatch");
 
         // ----------------------------------------------------------------
@@ -98,7 +98,7 @@ module tb_ControlUnit;
         tb_funct7 = 1'bx;
         tb_Zero   = 1'b1;
         #10;
-        assert (tb_PCSrc      == 1'b1)   else $fatal(1, "beq(Z=1): PCSrc mismatch");
+        assert (tb_PCSrc      == 2'b1)   else $fatal(1, "beq(Z=1): PCSrc mismatch");
         assert (tb_ImmSrc     == 2'b10)  else $fatal(1, "beq(Z=0): ImmSrc mismatch");
         assert (tb_ALUControl == 4'b001) else $fatal(1, "beq(Z=1): ALUControl mismatch");
 
@@ -117,7 +117,7 @@ module tb_ControlUnit;
         assert (tb_ALUSrcB   == 1'b0)   else $fatal(1, "add: ALUSrcB mismatch");
         assert (tb_MemWrite   == 1'b0)   else $fatal(1, "add: MemWrite mismatch");
         assert (tb_ResultSrc  == 1'b0)   else $fatal(1, "add: ResultSrc mismatch");
-        assert (tb_PCSrc      == 1'b0)   else $fatal(1, "add: PCSrc mismatch");
+        assert (tb_PCSrc      == 2'b0)   else $fatal(1, "add: PCSrc mismatch");
         assert (tb_ALUControl == 4'b000) else $fatal(1, "add: ALUControl mismatch");
 
         // ----------------------------------------------------------------
@@ -279,8 +279,21 @@ module tb_ControlUnit;
         #10;
         assert (tb_ResultSrc == 2'b10)        else $fatal(1, "jal: ResultSrc mismatch");
         assert (tb_ImmSrc == 3'b11)           else $fatal(1, "jal: ImmSrc mismatch");
-        assert (tb_PCSrc   == 1'b1)           else $fatal(1, "jal: PCSrc mismatch");
+        assert (tb_PCSrc   == 2'b1)           else $fatal(1, "jal: PCSrc mismatch");
+        
+        // ----------------------------------------------------------------
+        // TEST 18: I-type jalr (op=1100111)
+        //   RegWrite = 1'b1, ImmSrc=000, ALUSrcB = 1'b1, ResultSrc = 2'b10,
+        //   PCSrc = 1'b10,
+        // ----------------------------------------------------------------
+        tb_op     = 7'b1100111;
 
+        #10;
+        assert (tb_RegWrite == 1'b1)          else $fatal(1, "jalr: RegWrite mismatch");
+        assert (tb_ImmSrc   == 3'b000)        else $fatal(1, "jalr: ImmSrc mismatch");
+        assert (tb_PCSrc    == 2'b10)          else $fatal(1, "jalr: PCSrc mismatch");
+        assert (tb_ALUSrcB  == 1'b1)          else $fatal(1, "jalr: ALUSrcB mismatch");
+        assert (tb_ResultSrc  == 2'b10)       else $fatal(1, "jalr: ResultSrc mismatch");
         $display("All tests passed.");
         $finish;
     end
