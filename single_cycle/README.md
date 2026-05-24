@@ -15,6 +15,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - [Data Memory](#data-memory)
   - [Instruction Memory](#instruction-memory)
   - [Immediate Unit](#immediate-unit)
+  - [Program Counter](#program-counter)
   - [References](#references)
 
 ## Supported Instructions
@@ -157,6 +158,13 @@ single_cycle/
   | 010    | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
   | 011    | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
   | 100    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
+
+## Program Counter
+
+| pc_src | pc           |
+| :----- | ------------ |
+| 0      | pc + 4       |
+| 1      | pc + imm_ext |
 
 ## References
 

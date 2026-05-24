@@ -4,7 +4,7 @@
 `include "instruction_memory.sv"
 `include "register_file.sv"
 `include "sign_extend.sv"
-
+`include "program_counter.sv"
 
 module CPUTop #(
         parameter CLK_PERIOD = 10,
@@ -35,10 +35,12 @@ module CPUTop #(
     logic [31:0] read_data;
     
     // Instruction Memory
+    logic [31:0] instr;
+
+    // program counter
     logic [31:0] pc_target;
     logic [31:0] pc_plus_4;
     logic [31:0] pc;
-    logic [31:0] instr;
 
     // Register File
     logic [4:0] reg_A1, reg_A2, reg_A3;
@@ -49,8 +51,6 @@ module CPUTop #(
     logic [31:0] imm_ext;
 
     // Multiplexors
-    assign pc_target = pc + imm_ext;
-    assign pc_plus_4 = pc + 4'b100;
     assign src_a = (alu_src_a == 2'b0) ? reg_rd1 :
                    (alu_src_a == 2'b1) ? pc :
                    (alu_src_a == 2'b10) ? 32'b0 :
@@ -71,15 +71,15 @@ module CPUTop #(
     end
 
     // PC
-    always_ff @(posedge clk) begin
-        if (rst_n == 1'b0)
-            pc <= 32'b0;
-        else if (pc_src == 1'b1)
-            pc <= pc_target;
-        else 
-            pc <= pc_plus_4;
-    end
-    
+    ProgramCounter programCounter(
+        .clk(clk),
+        .rst_n(rst_n),
+        .pc_src(pc_src),
+        .imm_ext(imm_ext),
+        .pc(pc),
+        .pc_target(pc_target),
+        .pc_plus_4(pc_plus_4)
+    );
 
     InstructionMemory #(NUM_BYTES) instructionMemory(
         .A(pc),
