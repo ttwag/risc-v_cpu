@@ -8,7 +8,7 @@ module ControlUnit (
     output logic [1:0] ResultSrc,
     output logic MemWrite,
     output logic [3:0] ALUControl,
-    output logic [1:0] ALUSrcA,
+    output logic ALUSrcA,
     output logic ALUSrcB,
     output logic [2:0] ImmSrc,
     output logic RegWrite,
@@ -43,7 +43,7 @@ module ControlUnitMainDecoder (
     output logic PCSrc,
     output logic [1:0] ResultSrc,
     output logic MemWrite,
-    output logic [1:0] ALUSrcA,
+    output logic ALUSrcA,
     output logic ALUSrcB,
     output logic [2:0] ImmSrc,
     output logic RegWrite,
@@ -53,7 +53,7 @@ module ControlUnitMainDecoder (
     always_comb begin
         // defaults
         ALUOp     = 2'b00;
-        ALUSrcA  = 2'b0;
+        ALUSrcA  = 1'b0;
         ALUSrcB  = 1'b0;
         RegWrite  = 1'b0;
         MemWrite  = 1'b0;
@@ -90,13 +90,12 @@ module ControlUnitMainDecoder (
             end
             7'b0010111: begin //U-type PC-Relative
                 RegWrite = 1'b1;
-                ALUSrcA = 2'b1;
-                ALUSrcB = 1'b1;
                 ImmSrc = 3'b101;
+                ResultSrc = 2'b11;
             end
             7'b0110111: begin //U-type Non PC-Relative
                 RegWrite = 1'b1;
-                ALUSrcA = 2'b10;
+                ALUSrcA = 1'b1;
                 ALUSrcB = 1'b1;
                 ImmSrc = 3'b101;
             end

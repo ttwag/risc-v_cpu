@@ -89,15 +89,15 @@ single_cycle/
 
 | Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | PCSrc         | ALUOp | MemWidth |
 | :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ------------- | ----- | -------- |
-| I-type Load                 | 0000011 | 1        | 000    | 00      | 1       | 0        | 01        | 0             | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 00      | 1       | 0        | 00        | 0             | 10    | funct3   |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 00      | 10      | 0        | 00        | 0             | 10    | funct3   |
-| sw                          | 0100011 | 0        | 001    | 00      | 1       | 1        | x         | 0             | 00    | funct3   |
-| R-type                      | 0110011 | 1        | xx     | 00      | 0       | 0        | 00        | 0             | 10    | funct3   |
-| B-type                      | 1100011 | 0        | 010    | 00      | 0       | 0        | x         | BranchControl | 01    | funct3   |
-| U-type PC-Relative          | 0010111 | 1        | 101    | 01      | 1       | 0        | 00        | 0             | 00    | x        |
-| U-type Non PC-Relative      | 0110111 | 1        | 101    | 10      | 1       | 0        | 00        | 0             | 00    | x        |
-| J-type                      | 1101111 | 1        | 011    | 00      | 0       | 0        | 10        | 1             | 00    | x        |
+| I-type Load                 | 0000011 | 1        | 000    | 0       | 1       | 0        | 01        | 0             | 00    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 0             | 10    | funct3   |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 0             | 10    | funct3   |
+| sw                          | 0100011 | 0        | 001    | 0       | 1       | 1        | x         | 0             | 00    | funct3   |
+| R-type                      | 0110011 | 1        | xx     | 0       | 0       | 0        | 00        | 0             | 10    | funct3   |
+| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | BranchControl | 01    | funct3   |
+| U-type PC-Relative          | 0010111 | 1        | 101    | 0       | 0       | 0        | 11        | 0             | 00    | x        |
+| U-type Non PC-Relative      | 0110111 | 1        | 101    | 1       | 1       | 0        | 00        | 0             | 00    | x        |
+| J-type                      | 1101111 | 1        | 011    | 0       | 0       | 0        | 10        | 1             | 00    | x        |
 
 ### ALU Decoder Truth Table
 

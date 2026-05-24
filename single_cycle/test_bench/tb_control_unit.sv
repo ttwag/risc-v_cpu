@@ -9,7 +9,7 @@ module tb_ControlUnit;
     logic [1:0] tb_ResultSrc;
     logic       tb_MemWrite;
     logic [3:0] tb_ALUControl;
-    logic [1:0] tb_ALUSrcA;
+    logic       tb_ALUSrcA;
     logic       tb_ALUSrcB;
     logic [2:0] tb_ImmSrc;
     logic       tb_RegWrite;
@@ -266,7 +266,7 @@ module tb_ControlUnit;
         #10;
         assert (tb_RegWrite   == 1'b1)      else $fatal(1, "lui: RegWrite mismatch");
         assert (tb_ALUControl == 4'b0000)   else $fatal(1, "lui: ALUControl mismatch");
-        assert (tb_ALUSrcA   == 2'b10)     else $fatal(1, "lui: ALUSrcA mismatch");
+        assert (tb_ALUSrcA   == 1'b1)     else $fatal(1, "lui: ALUSrcA mismatch");
         assert (tb_ALUSrcB   == 1'b1)      else $fatal(1, "lui: ALUSrcB mismatch");
         assert (tb_ImmSrc        == 3'b101)    else $fatal(1, "lui: ImmSrc mismatch");
         

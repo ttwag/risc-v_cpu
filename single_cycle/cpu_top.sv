@@ -25,7 +25,7 @@ module CPUTop #(
     logic [1:0] result_src;
     logic       mem_write;
     logic [3:0] alu_control;
-    logic [1:0] alu_src_a;
+    logic       alu_src_a;
     logic       alu_src_b;
     logic [2:0] imm_src;
     logic       reg_write;
@@ -51,9 +51,8 @@ module CPUTop #(
     logic [31:0] imm_ext;
 
     // Multiplexors
-    assign src_a = (alu_src_a == 2'b0) ? reg_rd1 :
-                   (alu_src_a == 2'b1) ? pc :
-                   (alu_src_a == 2'b10) ? 32'b0 :
+    assign src_a = (alu_src_a == 1'b0) ? reg_rd1 :
+                   (alu_src_a == 1'b1) ? 32'b0 :
                    32'bx; 
     assign src_b = (alu_src_b == 1'b0) ? reg_rd2 :
                    (alu_src_b == 1'b1) ? imm_ext :
@@ -62,6 +61,7 @@ module CPUTop #(
     assign result = (result_src == 2'b00) ? alu_result :
                     (result_src == 2'b01) ? read_data  :
                     (result_src == 2'b10) ? pc_plus_4  :
+                    (result_src == 2'b11) ? pc_target  :
                     32'bx;
 
     // PC
