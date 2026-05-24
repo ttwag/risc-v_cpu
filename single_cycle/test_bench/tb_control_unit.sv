@@ -6,7 +6,7 @@ module tb_ControlUnit;
     logic       tb_funct7;
     logic       tb_Zero;
     logic       tb_PCSrc;
-    logic       tb_ResultSrc;
+    logic [1:0] tb_ResultSrc;
     logic       tb_MemWrite;
     logic [3:0] tb_ALUControl;
     logic [1:0] tb_ALUSrcA;
@@ -270,6 +270,17 @@ module tb_ControlUnit;
         assert (tb_ALUSrcB   == 1'b1)      else $fatal(1, "lui: ALUSrcB mismatch");
         assert (tb_ImmSrc        == 3'b101)    else $fatal(1, "lui: ImmSrc mismatch");
         
+        // ----------------------------------------------------------------
+        // TEST 17: J-type jal (op=1101111)
+        //   ResultSrc=10, ImmSrc=011, PCSrc=1
+        // ----------------------------------------------------------------
+        tb_op     = 7'b1101111;
+
+        #10;
+        assert (tb_ResultSrc == 2'b10)        else $fatal(1, "jal: ResultSrc mismatch");
+        assert (tb_ImmSrc == 3'b11)           else $fatal(1, "jal: ImmSrc mismatch");
+        assert (tb_PCSrc   == 1'b1)           else $fatal(1, "jal: PCSrc mismatch");
+
         $display("All tests passed.");
         $finish;
     end
