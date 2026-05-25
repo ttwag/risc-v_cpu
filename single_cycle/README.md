@@ -46,14 +46,15 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 
 ```text
 single_cycle/
-├── alu.sv
-├── register_file.sv
-├── control_unit.sv
-├── data_memory.sv
-├── instruction_memory.sv
-├── sign_extend.sv
-├── program_counter.sv
-├── top_cpu.sv
+├── src/
+│   ├── alu.sv
+│   ├── register_file.sv
+│   ├── control_unit.sv
+│   ├── data_memory.sv
+│   ├── instruction_memory.sv
+│   ├── sign_extend.sv
+│   ├── program_counter.sv
+│   └── top_cpu.sv`
 └── testbench/
     ├── tb_alu.sv
     :
