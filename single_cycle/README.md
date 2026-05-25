@@ -64,18 +64,18 @@ single_cycle/
 
 ### Operations
 
-| ALUControl |              Operation |
-| ---------: | ---------------------: |
-|       0000 |               Addition |
-|       0001 |            Subtraction |
-|       0010 |            Bitwise And |
-|       0011 |             Bitwise Or |
-|       0100 |            Bitwise XOr |
-|       0101 |                    SLT |
-|       0110 |           SLT Unsigned |
-|       0111 |     Shift Left Logical |
-|       1000 |    Shift Right Logical |
-|       1001 | Shift Right Arithmetic |
+| alu_control |              Operation |
+| ----------: | ---------------------: |
+|        0000 |               Addition |
+|        0001 |            Subtraction |
+|        0010 |            Bitwise And |
+|        0011 |             Bitwise Or |
+|        0100 |            Bitwise XOr |
+|        0101 |                    SLT |
+|        0110 |           SLT Unsigned |
+|        0111 |     Shift Left Logical |
+|        1000 |    Shift Right Logical |
+|        1001 | Shift Right Arithmetic |
 
 - SLT (Set Less Than) — outputs 1 if A < B (signed \* comparison), else 0
 
@@ -89,51 +89,51 @@ single_cycle/
 
 ### Main Decoder Truth Table
 
-| Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | PCSrc             | ALUOp | MemWidth |
-| :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ----------------- | ----- | -------- |
-| I-type Load                 | 0000011 | 1        | 000    | 0       | 1       | 0        | 01        | 00                | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 00                | 10    | x        |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 00                | 10    | x        |
-| I-Type Jump                 | 1100111 | 1        | 000    | 0       | 1       | 0        | 10        | 10                | 00    | x        |
-| sw                          | 0100011 | 0        | 001    | 0       | 1       | 1        | x         | 00                | 00    | funct3   |
-| R-type                      | 0110011 | 1        | x      | 0       | 0       | 0        | 00        | 00                | 10    | x        |
-| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | {0,BranchControl} | 01    | x        |
-| U-type PC-Relative          | 0010111 | 1        | 101    | 0       | 0       | 0        | 11        | 00                | 00    | x        |
-| U-type Non PC-Relative      | 0110111 | 1        | 101    | 1       | 1       | 0        | 00        | 00                | 00    | x        |
-| J-type                      | 1101111 | 1        | 011    | 0       | 0       | 0        | 10        | 01                | 00    | x        |
+| Instruction                 | Op      | reg_write | imm_src | alu_src_a | ALUSrcB | mem_write | result_src | pc_src             | alu_op | mem_width |
+| :-------------------------- | ------- | --------- | ------- | --------- | ------- | --------- | ---------- | ------------------ | ------ | --------- |
+| I-type Load                 | 0000011 | 1         | 000     | 0         | 1       | 0         | 01         | 00                 | 00     | funct3    |
+| I-Type Non-shift Arithmetic | 0010011 | 1         | 000     | 0         | 1       | 0         | 00         | 00                 | 10     | x         |
+| I-Type Shift Arithmetic     | 0010011 | 1         | 100     | 0         | 1       | 0         | 00         | 00                 | 10     | x         |
+| I-Type Jump                 | 1100111 | 1         | 000     | 0         | 1       | 0         | 10         | 10                 | 00     | x         |
+| sw                          | 0100011 | 0         | 001     | 0         | 1       | 1         | x          | 00                 | 00     | funct3    |
+| R-type                      | 0110011 | 1         | x       | 0         | 0       | 0         | 00         | 00                 | 10     | x         |
+| B-type                      | 1100011 | 0         | 010     | 0         | 0       | 0         | x          | {0,branch_control} | 01     | x         |
+| U-type PC-Relative          | 0010111 | 1         | 101     | 0         | 0       | 0         | 11         | 00                 | 00     | x         |
+| U-type Non PC-Relative      | 0110111 | 1         | 101     | 1         | 1       | 0         | 00         | 00                 | 00     | x         |
+| J-type                      | 1101111 | 1         | 011     | 0         | 0       | 0         | 10         | 01                 | 00     | x         |
 
 ### ALU Decoder Truth Table
 
-| ALUOp | funct3 | {op_5, funct7_5} | ALUControl                    | Instruction        |
-| :---- | ------ | ---------------- | ----------------------------- | ------------------ |
-| 00    | x      | x                | 0000 (add)                    | lw, sw, auipc, lui |
-| 01    | 000    | x                | 0001 (subtract)               | beq                |
-|       | 001    | x                | 0001                          | bne                |
-|       | 100    | x                | 0101 (set les than)           | blt                |
-|       | 101    | x                | 0101 (set les than)           | bge                |
-|       | 110    | x                | 0110 (set les than unsigned)  | bltu               |
-|       | 111    | x                | 0110 (set les than unsigned)  | bgeu               |
-| 10    | 000    | 00, 01, 10       | 0000 (add)                    | add                |
-|       | 000    | 11               | 0001 (subtract)               | sub                |
-|       | 001    | x                | 0111 (shift Left Logical)     | sll                |
-|       | 010    | x                | 0101 (set less than)          | slt                |
-|       | 011    | x                | 0110 (set less than unsigned) | sltu               |
-|       | 100    | x                | 0100 (exclusive or)           | xor                |
-|       | 101    | x0               | 1000 (shift right logical)    | srl                |
-|       | 101    | x1               | 1001 (shift right arithmetic) | sra                |
-|       | 110    | x                | 0011 (or)                     | or                 |
-|       | 111    | x                | 0010 (and)                    | and                |
+| alu_op | funct3 | {op_5, funct7_5} | alu_control                   | Instruction        |
+| :----- | ------ | ---------------- | ----------------------------- | ------------------ |
+| 00     | x      | x                | 0000 (add)                    | lw, sw, auipc, lui |
+| 01     | 000    | x                | 0001 (subtract)               | beq                |
+|        | 001    | x                | 0001                          | bne                |
+|        | 100    | x                | 0101 (set les than)           | blt                |
+|        | 101    | x                | 0101 (set les than)           | bge                |
+|        | 110    | x                | 0110 (set les than unsigned)  | bltu               |
+|        | 111    | x                | 0110 (set les than unsigned)  | bgeu               |
+| 10     | 000    | 00, 01, 10       | 0000 (add)                    | add                |
+|        | 000    | 11               | 0001 (subtract)               | sub                |
+|        | 001    | x                | 0111 (shift Left Logical)     | sll                |
+|        | 010    | x                | 0101 (set less than)          | slt                |
+|        | 011    | x                | 0110 (set less than unsigned) | sltu               |
+|        | 100    | x                | 0100 (exclusive or)           | xor                |
+|        | 101    | x0               | 1000 (shift right logical)    | srl                |
+|        | 101    | x1               | 1001 (shift right arithmetic) | sra                |
+|        | 110    | x                | 0011 (or)                     | or                 |
+|        | 111    | x                | 0010 (and)                    | and                |
 
 ### Branch Decoder Truth Table
 
-| funct3 | ALUControl                   | BranchControl |
-| :----- | ---------------------------- | ------------- |
-| 000    | 0001 (subtract)              | Zero          |
-| 001    | 0001 (subtract)              | ~Zero         |
-| 100    | 0101 (set les than)          | ~ALUResult[0] |
-| 101    | 0101 (set les than)          | ALUResult[0]  |
-| 110    | 0110 (set les than unsigned) | ~ALUResult[0] |
-| 111    | 0110 (set les than unsigned) | ALUResult[0]  |
+| funct3 | alu_control                  | branch_control |
+| :----- | ---------------------------- | -------------- |
+| 000    | 0001 (subtract)              | Zero           |
+| 001    | 0001 (subtract)              | ~Zero          |
+| 100    | 0101 (set les than)          | ~ALUResult[0]  |
+| 101    | 0101 (set les than)          | ALUResult[0]   |
+| 110    | 0110 (set les than unsigned) | ~ALUResult[0]  |
+| 111    | 0110 (set les than unsigned) | ALUResult[0]   |
 
 ## Data Memory
 
@@ -143,7 +143,7 @@ single_cycle/
 - RISC-V is byte addressable
   - Each Memory address lives a byte
 - Read has to be asynchronous because writing the value back to a register takes a cycle, and each instruction must take 1 cycle
-- Depending on control unit's MemWidth, 1, 2, 4 bytes of memory could be read at once
+- Depending on control unit's mem_width, 1, 2, 4 bytes of memory could be read at once
 
 ## Instruction Memory
 
@@ -154,14 +154,14 @@ single_cycle/
 
 - For each instruction type, grabs the correct field to assemble them into the immediate
 
-  | ImmSrc | ImmExt                                                         | Type | Description             |
-  | :----- | :------------------------------------------------------------- | :--- | ----------------------- |
-  | 000    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
-  | 001    | {{20{Instr[31]}}, Instr[31:25], Instr[11:7]}                   | S    | 12-bit signed immediate |
-  | 010    | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
-  | 011    | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
-  | 100    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
-  | 101    | {Instr[31:12], 12'b0}                                          | U    | 32-bit upper immediate  |
+  | imm_src | imm_ext                                                        | Type | Description             |
+  | :------ | :------------------------------------------------------------- | :--- | ----------------------- |
+  | 000     | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
+  | 001     | {{20{Instr[31]}}, Instr[31:25], Instr[11:7]}                   | S    | 12-bit signed immediate |
+  | 010     | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
+  | 011     | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
+  | 100     | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
+  | 101     | {Instr[31:12], 12'b0}                                          | U    | 32-bit upper immediate  |
 
 ## Program Counter
 

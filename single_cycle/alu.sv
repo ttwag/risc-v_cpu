@@ -1,25 +1,25 @@
-module ALU(
-  input logic signed [31:0] SrcA, SrcB,
-  input logic [3:0] ALUControl,
-  output logic [31:0] ALUResult,
-  output logic Zero
+module Alu(
+  input logic signed [31:0] src_a, src_b,
+  input logic [3:0] alu_control,
+  output logic [31:0] alu_result,
+  output logic zero
 );
 
-assign Zero = ALUResult == 0;
+assign zero = alu_result == 0;
 
 always_comb begin
-  case (ALUControl)
-    4'b0000 : ALUResult = SrcA + SrcB;
-    4'b0001 : ALUResult = SrcA - SrcB;
-    4'b0010 : ALUResult = SrcA & SrcB;
-    4'b0011 : ALUResult = SrcA | SrcB;
-    4'b0100 : ALUResult = SrcA ^ SrcB;
-    4'b0101 : ALUResult = {31'b0, SrcA < SrcB};
-    4'b0110 : ALUResult = {31'b0, $unsigned(SrcA) < $unsigned(SrcB)};
-    4'b0111 : ALUResult = $unsigned(SrcA) << SrcB;
-    4'b1000 : ALUResult = $unsigned(SrcA) >> SrcB;
-    4'b1001 : ALUResult = SrcA >>> SrcB;
-    default : ALUResult = 32'bx;
+  case (alu_control)
+    4'b0000 : alu_result = src_a + src_b;
+    4'b0001 : alu_result = src_a - src_b;
+    4'b0010 : alu_result = src_a & src_b;
+    4'b0011 : alu_result = src_a | src_b;
+    4'b0100 : alu_result = src_a ^ src_b;
+    4'b0101 : alu_result = {31'b0, src_a < src_b};
+    4'b0110 : alu_result = {31'b0, $unsigned(src_a) < $unsigned(src_b)};
+    4'b0111 : alu_result = $unsigned(src_a) << src_b;
+    4'b1000 : alu_result = $unsigned(src_a) >> src_b;
+    4'b1001 : alu_result = src_a >>> src_b;
+    default : alu_result = 32'bx;
   endcase
 end
 

@@ -6,7 +6,7 @@
 `include "sign_extend.sv"
 `include "program_counter.sv"
 
-module CPUTop #(
+module CpuTop #(
         parameter CLK_PERIOD = 10,
         parameter NUM_BYTES = 64
     ) 
@@ -77,59 +77,59 @@ module CPUTop #(
     );
 
     InstructionMemory #(NUM_BYTES) instructionMemory(
-        .A(pc),
-        .RD(instr)
+        .addr(pc),
+        .read_data(instr)
     );
 
-    ALU alu(
-        .SrcA(src_a), 
-        .SrcB(src_b), 
-        .ALUControl(alu_control),
-        .Zero(zero), 
-        .ALUResult(alu_result)
+    Alu alu(
+        .src_a(src_a), 
+        .src_b(src_b), 
+        .alu_control(alu_control),
+        .zero(zero), 
+        .alu_result(alu_result)
     );
     ControlUnit controlUnit(
         .op        (instr[6:0]),
         .funct3    (instr[14:12]),
         .funct7    (instr[30]),
-        .Zero      (zero),
-        .ALUResult (alu_result[0]),
-        .PCSrc     (pc_src),
-        .ResultSrc (result_src),
-        .MemWrite  (mem_write),
-        .ALUControl(alu_control),
-        .ALUSrcA  (alu_src_a),
-        .ALUSrcB  (alu_src_b),
-        .ImmSrc    (imm_src),
-        .RegWrite  (reg_write),
-        .MemWidth  (mem_width)
+        .zero      (zero),
+        .alu_result (alu_result[0]),
+        .pc_src     (pc_src),
+        .result_src (result_src),
+        .mem_write  (mem_write),
+        .alu_control(alu_control),
+        .alu_src_a  (alu_src_a),
+        .alu_src_b  (alu_src_b),
+        .imm_src    (imm_src),
+        .reg_write  (reg_write),
+        .mem_width  (mem_width)
     );
 
     DataMemory #(.NUM_BYTES(NUM_BYTES)) dataMemory(
-        .CLK(clk), 
-        .WE(mem_write),
-        .A(alu_result),
-        .WD(reg_rd2),
-        .MemWidth(mem_width),
-        .RD(read_data)
+        .clk(clk), 
+        .write_enable(mem_write),
+        .addr(alu_result),
+        .write_data(reg_rd2),
+        .mem_width(mem_width),
+        .read_data(read_data)
     );
 
     RegisterFile registerFile(
-        .CLK(clk), 
+        .clk(clk), 
         .rst_n(rst_n), 
-        .WE3(reg_write), 
-        .A1(instr[19:15]), 
-        .A2(instr[24:20]),
-        .A3(instr[11:7]), 
-        .WD3(result),
-        .RD1(reg_rd1), 
-        .RD2(reg_rd2)
+        .write_enable_addr_3(reg_write), 
+        .addr_1(instr[19:15]), 
+        .addr_2(instr[24:20]),
+        .addr_3(instr[11:7]), 
+        .write_data_addr_3(result),
+        .read_data_addr_1(reg_rd1), 
+        .read_data_addr_2(reg_rd2)
     );
     
     SignExtend signExtend(
-        .Instr(instr),
-        .ImmSrc(imm_src),
-        .ImmExt(imm_ext)
+        .instr(instr),
+        .imm_src(imm_src),
+        .imm_ext(imm_ext)
     );
 
 endmodule

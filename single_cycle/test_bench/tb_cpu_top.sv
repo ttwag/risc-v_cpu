@@ -10,7 +10,7 @@ module tb_CPUTop;
     // -------------------------
     // DUT
     // -------------------------
-    CPUTop #(
+    CpuTop #(
         .CLK_PERIOD(tb_CLK_PERIOD),
         .NUM_BYTES(tb_NUM_BYTES)
     ) DUT(

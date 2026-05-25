@@ -6,8 +6,8 @@ module tb_alu;
   logic [31:0] tb_result;
   string dumpfile;
 
-  ALU TestALU(.SrcA(tb_src_a), .SrcB(tb_src_b), .ALUControl(tb_control),
-  .Zero(tb_zero), .ALUResult(tb_result));
+  Alu TestALU(.src_a(tb_src_a), .src_b(tb_src_b), .alu_control(tb_control),
+  .zero(tb_zero), .alu_result(tb_result));
   
   initial begin
     // for waveform analysis
