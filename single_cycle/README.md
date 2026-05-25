@@ -95,7 +95,7 @@ single_cycle/
 | I-Type Non-shift Arithmetic | 0010011 | 1         | 000     | 0         | 1       | 0         | 00         | 00                 | 10     | x         |
 | I-Type Shift Arithmetic     | 0010011 | 1         | 100     | 0         | 1       | 0         | 00         | 00                 | 10     | x         |
 | I-Type Jump                 | 1100111 | 1         | 000     | 0         | 1       | 0         | 10         | 10                 | 00     | x         |
-| sw                          | 0100011 | 0         | 001     | 0         | 1       | 1         | x          | 00                 | 00     | funct3    |
+| S-type                      | 0100011 | 0         | 001     | 0         | 1       | 1         | x          | 00                 | 00     | funct3    |
 | R-type                      | 0110011 | 1         | x       | 0         | 0       | 0         | 00         | 00                 | 10     | x         |
 | B-type                      | 1100011 | 0         | 010     | 0         | 0       | 0         | x          | {0,branch_control} | 01     | x         |
 | U-type PC-Relative          | 0010111 | 1         | 101     | 0         | 0       | 0         | 11         | 00                 | 00     | x         |
