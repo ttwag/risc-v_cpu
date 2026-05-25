@@ -26,7 +26,8 @@ module tb_RegisterFile;
     end
 
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
         
@@ -59,6 +60,7 @@ module tb_RegisterFile;
         assert (tb_read_data_addr_1 == 'b0) 
             else   $fatal(1, "%b (read_data_addr_1) != 0)", tb_read_data_addr_2);
         
+        $display("All tests passed.");
         $finish;
     end
 endmodule

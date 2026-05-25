@@ -27,7 +27,8 @@ module tb_PC;
     end
 
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
         
@@ -51,7 +52,9 @@ module tb_PC;
         tb_alu_result = 32'b1011;
         @(posedge tb_clk); #tb_SETTLE;
         assert(tb_pc == 11)
-            else $fatal(1, "pc expected %d, got %b", 11, tb_pc);        
+            else $fatal(1, "pc expected %d, got %b", 11, tb_pc);
+        
+        $display("All tests passed.");
         $finish;
     end
 

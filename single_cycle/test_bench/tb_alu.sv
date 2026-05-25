@@ -11,7 +11,8 @@ module tb_alu;
   
   initial begin
     // for waveform analysis
-    $value$plusargs("DUMPFILE=%s", dumpfile);
+    if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
     $dumpfile(dumpfile);
     $dumpvars();
 
@@ -109,6 +110,7 @@ module tb_alu;
     else $fatal(1, "SRA sign-extension failed, got %b with %b & %b",
                 tb_result, tb_src_a, tb_src_b);
 
+  $display("All tests passed.");
+  $finish;
   end
-  
 endmodule

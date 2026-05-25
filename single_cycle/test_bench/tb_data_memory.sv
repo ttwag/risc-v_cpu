@@ -169,7 +169,8 @@ module tb_DataMemory;
     end
 
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
         
@@ -183,6 +184,7 @@ module tb_DataMemory;
         test_sw();
         test_read_after_write();
         
+        $display("All tests passed.");
         $finish;
     end
     

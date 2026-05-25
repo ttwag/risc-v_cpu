@@ -311,11 +311,8 @@ module tb_CPUTop;
         test_u_type_non_pc_relative_instr();
         test_jal();
         test_addi_jalr();
-        // test b type
-        // test branch taken
-        // test branch not taken
-        // test immediate
-        // test jump
+        
+        $display("All tests passed.");
         $finish;
     end
 

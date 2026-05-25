@@ -11,7 +11,8 @@ module tb_InstructionMemory;
     );
     
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
 
@@ -39,7 +40,8 @@ module tb_InstructionMemory;
         #5;
         assert (tb_read_data == expected_read_data)
             else $fatal(1, "Asssertion Failed: Expected read_data == %h but got %h", expected_read_data, tb_read_data);
-
+        
+        $display("All tests passed.");
         $finish;
     end
 

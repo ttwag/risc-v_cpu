@@ -13,7 +13,8 @@ module tb_SignExtend;
     );
 
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
         
@@ -68,6 +69,7 @@ module tb_SignExtend;
         assert (tb_imm_ext == expected_imm_ext)
             else $fatal(1, "U-Type instruction Assertion failed: %h != %h (expected)", tb_imm_ext, expected_imm_ext);
         
+        $display("All tests passed.");
         $finish;
     end
 

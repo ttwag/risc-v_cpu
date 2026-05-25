@@ -33,7 +33,8 @@ module tb_ControlUnit;
     );
 
     initial begin
-        $value$plusargs("DUMPFILE=%s", dumpfile);
+        if (!$value$plusargs("DUMPFILE=%s", dumpfile))
+            dumpfile = "dump.fst";
         $dumpfile(dumpfile);
         $dumpvars();
 
@@ -294,6 +295,7 @@ module tb_ControlUnit;
         assert (tb_pc_src    == 2'b10)          else $fatal(1, "jalr: pc_src mismatch");
         assert (tb_alu_src_b  == 1'b1)          else $fatal(1, "jalr: alu_src_b mismatch");
         assert (tb_result_src  == 2'b10)       else $fatal(1, "jalr: result_src mismatch");
+       
         $display("All tests passed.");
         $finish;
     end
