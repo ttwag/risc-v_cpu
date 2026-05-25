@@ -28,10 +28,10 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 - S-type
   - **Store:** sb, sw, sh
 - R-type
-  - add, sub
-  - and, or, xor
-  - slt, sltu
-  - sll, srl, sra
+  - **Arithmetics:** add, sub
+  - **Bit-wise Logical Operation:** and, or, xor
+  - **Comparison:** slt, sltu
+  - **Shifts:** sll, srl, sra
 - B-type
   - **Branch Equality:** beq, bne
   - **Branch Comparison:** blt, bge
@@ -40,7 +40,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - **PC-Relative:** auipc
   - **Non PC-Relative:** lui
 - J-type
-  - jal
+  - **Jump and link:** jal
 
 ## Directory Structure
 
@@ -52,6 +52,7 @@ single_cycle/
 ├── data_memory.sv
 ├── instruction_memory.sv
 ├── sign_extend.sv
+├── program_counter.sv
 ├── top_cpu.sv
 └── testbench/
     ├── tb_alu.sv
@@ -91,12 +92,12 @@ single_cycle/
 | Instruction                 | Op      | RegWrite | ImmSrc | ALUSrcA | ALUSrcB | MemWrite | ResultSrc | PCSrc             | ALUOp | MemWidth |
 | :-------------------------- | ------- | -------- | ------ | ------- | ------- | -------- | --------- | ----------------- | ----- | -------- |
 | I-type Load                 | 0000011 | 1        | 000    | 0       | 1       | 0        | 01        | 00                | 00    | funct3   |
-| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 00                | 10    | funct3   |
-| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 00                | 10    | funct3   |
+| I-Type Non-shift Arithmetic | 0010011 | 1        | 000    | 0       | 1       | 0        | 00        | 00                | 10    | x        |
+| I-Type Shift Arithmetic     | 0010011 | 1        | 100    | 0       | 1       | 0        | 00        | 00                | 10    | x        |
 | I-Type Jump                 | 1100111 | 1        | 000    | 0       | 1       | 0        | 10        | 10                | 00    | x        |
 | sw                          | 0100011 | 0        | 001    | 0       | 1       | 1        | x         | 00                | 00    | funct3   |
-| R-type                      | 0110011 | 1        | xx     | 0       | 0       | 0        | 00        | 00                | 10    | funct3   |
-| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | {0,BranchControl} | 01    | funct3   |
+| R-type                      | 0110011 | 1        | x      | 0       | 0       | 0        | 00        | 00                | 10    | x        |
+| B-type                      | 1100011 | 0        | 010    | 0       | 0       | 0        | x         | {0,BranchControl} | 01    | x        |
 | U-type PC-Relative          | 0010111 | 1        | 101    | 0       | 0       | 0        | 11        | 00                | 00    | x        |
 | U-type Non PC-Relative      | 0110111 | 1        | 101    | 1       | 1       | 0        | 00        | 00                | 00    | x        |
 | J-type                      | 1101111 | 1        | 011    | 0       | 0       | 0        | 10        | 01                | 00    | x        |
@@ -160,6 +161,7 @@ single_cycle/
   | 010    | {{20{Instr[31]}}, Instr[7], Instr[30:25], Instr[11:8], 1’b0}   | B    | 13-bit signed immediate |
   | 011    | {{12{Instr[31]}}, Instr[19:12], Instr[20], Instr[30:21], 1’b0} | J    | 21-bit signed immediate |
   | 100    | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
+  | 101    | {Instr[31:12], 12'b0}                                          | U    | 32-bit upper immediate  |
 
 ## Program Counter
 
