@@ -78,7 +78,7 @@ module CpuTop #(
 
     InstructionMemory #(NUM_BYTES) instructionMemory(
         .addr(pc),
-        .read_data(instr)
+        .instr(instr)
     );
 
     Alu alu(

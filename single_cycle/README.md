@@ -2,8 +2,11 @@
 
 A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence in one cycle.
 
+![cpu_image](./images/risc-v_cpu.png)
+
 - [Single Cycle CPU](#single-cycle-cpu)
   - [Supported Instructions](#supported-instructions)
+  - [Design Decisions](#design-decisions)
   - [Directory Structure](#directory-structure)
   - [Arithmetic Logic Unit](#arithmetic-logic-unit)
     - [Operations](#operations)
@@ -41,6 +44,15 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - **Non PC-Relative:** lui
 - J-type
   - **Jump and link:** jal
+
+## Design Decisions
+
+The ISA and this implementation made certain decisions:
+
+- Consistent `rd` (`rs3`), `rs1`, and `rs2` location in each 32 bit instruction makes instruction decode before register file easy, thus moving some burden from the critical path to the extend unit that decodes the more scattered immediate fields.
+- The data memory and instruction memory both offer asynchronous read, since we must read and write back to register within a single cycle.
+- Why there are `alu_op` and `alu_control`? Seems like we could just map each instruction to an `alu_control` in the control unit table, given some `funct3` and `{op_5, funct7_5}`.
+  However, that would make the truth table sparse. Most I-type and U and J type instructions don't need `funct3` to get `alu_control`, so separating the `alu_control` logic into two layers improve code and documentation readability.
 
 ## Directory Structure
 
