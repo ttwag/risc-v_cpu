@@ -8,17 +8,19 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
   - [Supported Instructions](#supported-instructions)
   - [Design Decisions](#design-decisions)
   - [Directory Structure](#directory-structure)
-  - [Arithmetic Logic Unit](#arithmetic-logic-unit)
-    - [Operations](#operations)
-  - [Register File](#register-file)
-  - [Control Unit](#control-unit)
-    - [Main Decoder Truth Table](#main-decoder-truth-table)
-    - [ALU Decoder Truth Table](#alu-decoder-truth-table)
-    - [Branch Decoder Truth Table](#branch-decoder-truth-table)
-  - [Data Memory](#data-memory)
-  - [Instruction Memory](#instruction-memory)
-  - [Immediate Unit](#immediate-unit)
-  - [Program Counter](#program-counter)
+  - [Modules](#modules)
+    - [Arithmetic Logic Unit](#arithmetic-logic-unit)
+      - [Operations](#operations)
+    - [Register File](#register-file)
+    - [Control Unit](#control-unit)
+      - [Main Decoder Truth Table](#main-decoder-truth-table)
+      - [ALU Decoder Truth Table](#alu-decoder-truth-table)
+      - [Branch Decoder Truth Table](#branch-decoder-truth-table)
+    - [Data Memory](#data-memory)
+    - [Instruction Memory](#instruction-memory)
+    - [Immediate Unit](#immediate-unit)
+    - [Program Counter](#program-counter)
+  - [Run the Testbench](#run-the-testbench)
   - [References](#references)
 
 ## Supported Instructions
@@ -58,6 +60,7 @@ The ISA and this implementation made certain decisions:
 
 ```text
 single_cycle/
+├── .vscode/task.json
 ├── src/
 │   ├── alu.sv
 │   ├── register_file.sv
@@ -73,9 +76,11 @@ single_cycle/
     └── tb_top_cpu.sv
 ```
 
-## Arithmetic Logic Unit
+## Modules
 
-### Operations
+### Arithmetic Logic Unit
+
+#### Operations
 
 | alu_control |              Operation |
 | ----------: | ---------------------: |
@@ -92,15 +97,15 @@ single_cycle/
 
 - SLT (Set Less Than) — outputs 1 if A < B (signed \* comparison), else 0
 
-## Register File
+### Register File
 
 - Register 0 is always 0
 - Register file outputs the content of registers specified in A1 and A2 to RD1 and RD2
 - When WE3 is 1, write WD3 to register specified in A3
 
-## Control Unit
+### Control Unit
 
-### Main Decoder Truth Table
+#### Main Decoder Truth Table
 
 | Instruction                 | Op      | reg_write | imm_src | alu_src_a | ALUSrcB | mem_write | result_src | pc_src             | alu_op | mem_width |
 | :-------------------------- | ------- | --------- | ------- | --------- | ------- | --------- | ---------- | ------------------ | ------ | --------- |
@@ -115,7 +120,7 @@ single_cycle/
 | U-type Non PC-Relative      | 0110111 | 1         | 101     | 1         | 1       | 0         | 00         | 00                 | 00     | x         |
 | J-type                      | 1101111 | 1         | 011     | 0         | 0       | 0         | 10         | 01                 | 00     | x         |
 
-### ALU Decoder Truth Table
+#### ALU Decoder Truth Table
 
 | alu_op | funct3 | {op_5, funct7_5} | alu_control                   | Instruction        |
 | :----- | ------ | ---------------- | ----------------------------- | ------------------ |
@@ -137,7 +142,7 @@ single_cycle/
 |        | 110    | x                | 0011 (or)                     | or                 |
 |        | 111    | x                | 0010 (and)                    | and                |
 
-### Branch Decoder Truth Table
+#### Branch Decoder Truth Table
 
 | funct3 | alu_control                  | branch_control |
 | :----- | ---------------------------- | -------------- |
@@ -148,7 +153,7 @@ single_cycle/
 | 110    | 0110 (set les than unsigned) | ~ALUResult[0]  |
 | 111    | 0110 (set les than unsigned) | ALUResult[0]   |
 
-## Data Memory
+### Data Memory
 
 - RISC-V is **Little Endian**
   - The least significant byte of a multi-byte data value is stored at the lowest memory address
@@ -158,12 +163,12 @@ single_cycle/
 - Read has to be asynchronous because writing the value back to a register takes a cycle, and each instruction must take 1 cycle
 - Depending on control unit's mem_width, 1, 2, 4 bytes of memory could be read at once
 
-## Instruction Memory
+### Instruction Memory
 
 - Read only
 - Byte addressable and little endian
 
-## Immediate Unit
+### Immediate Unit
 
 - For each instruction type, grabs the correct field to assemble them into the immediate
 
@@ -176,13 +181,19 @@ single_cycle/
   | 100     | {{20{Instr[31]}}, Instr[31:20]}                                | I    | 12-bit signed immediate |
   | 101     | {Instr[31:12], 12'b0}                                          | U    | 32-bit upper immediate  |
 
-## Program Counter
+### Program Counter
+
+- The `pc` gets reset to 0 when `rst_n` is low.
 
 | pc_src | pc           |
 | :----- | ------------ |
 | 00     | pc + 4       |
 | 01     | pc + imm_ext |
 | 10     | alu_result   |
+
+## Run the Testbench
+
+- Use the build command in `.vscode/task.json`; press `command + shift + B` in VSCode
 
 ## References
 
