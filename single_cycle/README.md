@@ -7,6 +7,7 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
 - [Single Cycle CPU](#single-cycle-cpu)
   - [Supported Instructions](#supported-instructions)
   - [Design Decisions](#design-decisions)
+  - [Run the Test bench](#run-the-test-bench)
   - [Directory Structure](#directory-structure)
   - [Modules](#modules)
     - [Arithmetic Logic Unit](#arithmetic-logic-unit)
@@ -20,7 +21,6 @@ A basic RISC-V cpu that competes the fetch-decode-execute-memory-write sequence 
     - [Instruction Memory](#instruction-memory)
     - [Immediate Unit](#immediate-unit)
     - [Program Counter](#program-counter)
-  - [Run the Testbench](#run-the-testbench)
   - [References](#references)
 
 ## Supported Instructions
@@ -55,6 +55,12 @@ The ISA and this implementation made certain decisions:
 - The data memory and instruction memory both offer asynchronous read, since we must read and write back to register within a single cycle.
 - Why there are `alu_op` and `alu_control`? Seems like we could just map each instruction to an `alu_control` in the control unit table, given some `funct3` and `{op_5, funct7_5}`.
   However, that would make the truth table sparse. Most I-type and U and J type instructions don't need `funct3` to get `alu_control`, so separating the `alu_control` logic into two layers improve code and documentation readability.
+
+## Run the Test bench
+
+- Use the build command in `.vscode/task.json` to test the modules
+  - Press `command + shift + B` in VSCode when you open either a source or test bench file
+  - The build command would run the test of that module only. For example when you build while `cpu_top.sv` is opened, the `tb_cpu_top.sv` test would be run.
 
 ## Directory Structure
 
@@ -190,10 +196,6 @@ single_cycle/
 | 00     | pc + 4       |
 | 01     | pc + imm_ext |
 | 10     | alu_result   |
-
-## Run the Testbench
-
-- Use the build command in `.vscode/task.json`; press `command + shift + B` in VSCode
 
 ## References
 
