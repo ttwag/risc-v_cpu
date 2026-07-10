@@ -210,6 +210,25 @@ module tb_CPUTop;
             else $fatal(1, "pc expected 12, got %0d", DUT.pc);
     endtask
 
+    task test_add_branch_greater_than_equal();
+        reset_mem();
+        reset_dut();
+        load_reg(5'b01, 32'b1); //x1 = 1
+        load_reg(5'b10, 32'b10); //x2 = 2
+
+        load_instr(0, 32'b0000000_00001_00000_000_00001_0110011); //add x1 x0, x1
+        load_instr(4, 32'b0000000_00001_00010_101_01000_1100011); //bge x2, x1, 8
+
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (read_reg(1) == 32'b1)
+            else $fatal(1, "x1 expected 1, got 0x%h", read_reg(2));
+
+        // expects branch is true: pc := pc + 8
+        @(posedge tb_clk); #tb_SETTLE;
+        assert (DUT.pc == 12)
+            else $fatal(1, "pc expected 12, got %0d", DUT.pc);
+    endtask
+
     task test_addi_branch_less_than_unsigned();
         reset_mem();
         reset_dut();
@@ -311,6 +330,7 @@ module tb_CPUTop;
         test_u_type_non_pc_relative_instr();
         test_jal();
         test_addi_jalr();
+        test_add_branch_greater_than_equal();
         
         $display("All tests passed.");
         $finish;
