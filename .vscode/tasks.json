@@ -2,13 +2,20 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "compile check current file",
+      "label": "compile check current .sv file",
       "type": "shell",
       "command": "bash ./scripts/compile_src_sv.sh \"${file}\"",
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "build main.lang toy code to hex",
+      "type": "shell",
+      "command": "bash ./toy_compile/toy_compile.sh",
+      "group": "build",
       "presentation": {
         "reveal": "always",
         "panel": "shared"

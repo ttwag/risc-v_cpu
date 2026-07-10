@@ -61,9 +61,12 @@ The ISA and this implementation made certain decisions:
 - Use the build command in `.vscode/task.json` to build or test the modules
   - Run `Task: Run Build Task` in VSCode
     -`compile check current .sv file` when you want to compile a source file that is currently opened
+    -`build main.lang toy code to hex` to compile a toy language to `main.hex` to be tested by the `tb_cpu_top_with_compiled_hex.sv`
   - Run `Task: Run Test Task` in VSCode
     -`run testbench sim` to simulate the testbench that is currently opened
 - View the waveform by opening the .fst file in `sim/` and the `surfer` extension should automatically show the waves
+
+Note: for the developmental workflow that runs a toy language on this CPU, first `build main.lang toy code to hex`, and then simulate the `tb_cpu_top_with_compiled_hex.sv`. You can see the build artifacts in `toy_compile/build`
 
 ## Directory Structure
 
@@ -79,6 +82,7 @@ single_cycle/
 │   ├── sign_extend.sv
 │   ├── program_counter.sv
 │   └── top_cpu.sv`
+├── toy_compile/    // a test that runs a toy language on the CPU
 └── testbench/
     ├── tb_alu.sv
     :
