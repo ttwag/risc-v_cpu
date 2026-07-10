@@ -1,0 +1,14 @@
+{
+  "name": "riscv-cpu-dev",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "eirikpre.systemverilog", // for code coloring
+        "surfer-project.surfer" // for debugging dumped waveform
+      ]
+    }
+  }
+}

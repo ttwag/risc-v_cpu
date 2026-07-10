@@ -2,13 +2,23 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "sim current file",
+      "label": "compile check current file",
       "type": "shell",
-      "command": "FILE=${fileBasenameNoExtension} && FILE=${FILE#tb_} && mkdir -p sims && iverilog -I src/ -g2012 -o sims/${FILE}_sim test_bench/tb_${FILE}.sv src/${FILE}.sv && vvp sims/${FILE}_sim -fst +DUMPFILE=sims/${FILE}_dump.fst && RUST_LOG=error surfer sims/${FILE}_dump.fst",
+      "command": "bash ./scripts/compile_src_sv.sh \"${file}\"",
       "group": {
         "kind": "build",
         "isDefault": true
       },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "run testbench sim",
+      "type": "shell",
+      "command": "bash ./scripts/run_tb_sv.sh \"${file}\"",
+      "group": "test",
       "presentation": {
         "reveal": "always",
         "panel": "shared"

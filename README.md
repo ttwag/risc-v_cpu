@@ -58,9 +58,12 @@ The ISA and this implementation made certain decisions:
 
 ## Run the Testbench
 
-- Use the build command in `.vscode/task.json` to test the modules
-  - Press `command + shift + B` in VSCode when you open either a source or testbench file
-  - The build command would run the test of that module only. For example when you build while `cpu_top.sv` is opened, the `tb_cpu_top.sv` test would be run.
+- Use the build command in `.vscode/task.json` to build or test the modules
+  - Run `Task: Run Build Task` in VSCode
+    -`compile check current .sv file` when you want to compile a source file that is currently opened
+  - Run `Task: Run Test Task` in VSCode
+    -`run testbench sim` to simulate the testbench that is currently opened
+- View the waveform by opening the .fst file in `sim/` and the `surfer` extension should automatically show the waves
 
 ## Directory Structure
 

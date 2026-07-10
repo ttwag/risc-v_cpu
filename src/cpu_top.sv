@@ -1,11 +1,3 @@
-`include "alu.sv"
-`include "control_unit.sv"
-`include "data_memory.sv"
-`include "instruction_memory.sv"
-`include "register_file.sv"
-`include "sign_extend.sv"
-`include "program_counter.sv"
-
 module CpuTop #(
         parameter CLK_PERIOD = 10,
         parameter NUM_BYTES = 64
